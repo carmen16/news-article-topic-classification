@@ -1,0 +1,2 @@
+# Ignore all XML data files - too many to load into Git
+ldc/
