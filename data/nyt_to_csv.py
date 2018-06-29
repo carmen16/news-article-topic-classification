@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 import csv
-
+import sys
 
 
 # Functions that look for individual data points for an article
@@ -49,7 +49,10 @@ def get_copyright(article_soup, item):
 	except Exception:
 		copyright_item = None
 	finally:
-		return copyright_item
+		try:
+			return int(copyright_item)
+		except Exception:
+			return copyright_item
 
 def get_series(article_soup):
 	try:
@@ -169,7 +172,7 @@ def parse_article(article_soup, new_article_obj):
 	new_article_obj['online_sections'].append(metadata['online_sections'])
 	new_article_obj['id'].append(get_id(article_soup))
 	new_article_obj['copyright_holder'].append(get_copyright(article_soup,'holder'))
-	new_article_obj['copyright_year'].append(int(get_copyright(article_soup,'year')))
+	new_article_obj['copyright_year'].append(get_copyright(article_soup,'year'))
 	new_article_obj['series_name'].append(get_series(article_soup))
 	new_article_obj['indexing_descriptor'].append(classifiers['indexing_service_descriptor'])
 	new_article_obj['indexing_location'].append(get_indexing_service(article_soup,'location'))
@@ -225,7 +228,7 @@ def save_data(article_obj, filename):
  
 # Gets a list of random articles, parses them, and saves to a CSV file
 
-def main():
+def create_csv_file(n):
 	article_obj = {
 		'title': []
 		, 'publication_day_of_month': []
@@ -261,7 +264,7 @@ def main():
 		, 'author_info': []
 	}
 
-	article_list = get_article_list(1000)
+	article_list = get_article_list(n)
 
 	for article in article_list:
 		if article_list.index(article) % 100 == 0:
@@ -275,7 +278,8 @@ def main():
 
 if __name__ == '__main__':
 	#create_file_index() # doesn't need to be run again
-	main()
+	n = int(sys.argv[1])
+	create_csv_file(n)
 
 
 
