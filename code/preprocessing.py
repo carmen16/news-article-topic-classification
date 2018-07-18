@@ -31,13 +31,14 @@ def create_nouns_lemmas(data):
 	for i in range(len(data)):
 		if pd.isnull(data[i]):
 			noun_string = np.nan
+			lemma_string = np.nan
 		else:
 			tokens = tokenizer.tokenize(data[i])
 			tagged_tokens = pos_tag(tokens)
 			wn_tags = treebank_to_wn_tags(tagged_tokens)
 			
 			# For nouns
-			noun_list = [x[0] for x in wn_tags if x[1] == 'n']
+			noun_list = [x[0] for x in wn_tags if x[1] == wn.NOUN]
 			noun_string = ' '.join(noun_list)
 			
 			# For lemmas
@@ -52,28 +53,28 @@ def create_nouns_lemmas(data):
 
 def clean_labels(c):
 	# Regex operations to clean labels and collapse some categories
-    c = c.str.lower().str.strip()
-    c = c.str.replace('desk', '')
-    c = c.str.replace(';', '')
-    c = c.str.replace(' and ', ' & ')
-    c = c.str.replace('\\', '/')
-    c = c.str.replace('arts & .*|cultural|museums|the arts/cultural|.*weekend.*', 'arts')
-    c = c.str.replace('automobiles', 'cars')
-    c = c.str.replace('classifed|classifieds|job market', 'classified')
-    c = c.str.replace('.*dining out.*', 'dining')
-    c = c.str.replace('education.*', 'education')
-    c = c.str.replace('business/financ.*|business world magazine|e-commerce|.*money.*financ.*|sundaybusiness', 'business')
-    c = c.str.replace('health&fitness', 'health & fitness')
-    c = c.str.replace('home|house & home/style', 'home & garden')
-    c = c.str.replace('metropolitian', 'metropolitan')
-    c = c.str.replace('new jersey.*', 'new jersey weekly')
-    c = c.str.replace('connecticut weekly|new jersey weekly|long island weekly|the city weekly.*|westchester weekly', 'city & region weekly')
-    c = c.str.replace('thursday styles|styles of the times', 'style')
-    c = c.str.replace('.*design.*magazine|.*fashion.*magazine|.*style.*magazine|.*travel.*magazine|t: \w+.*', 't magazine')
-    c = c.str.replace('adventure sports|sports sports', 'sports')
-    c = c.str.replace('circuits|flight', 'technology')
-    c = c.str.strip()
-    return c
+	c = c.str.lower().str.strip()
+	c = c.str.replace('desk', '')
+	c = c.str.replace(';', '')
+	c = c.str.replace(' and ', ' & ')
+	c = c.str.replace('\\', '/')
+	c = c.str.replace('arts & .*|cultural|museums|the arts/cultural|.*weekend.*', 'arts')
+	c = c.str.replace('automobiles', 'cars')
+	c = c.str.replace('classifed|classifieds|job market', 'classified')
+	c = c.str.replace('.*dining out.*', 'dining')
+	c = c.str.replace('education.*', 'education')
+	c = c.str.replace('business/financ.*|business world magazine|e-commerce|.*money.*financ.*|sundaybusiness', 'business')
+	c = c.str.replace('health&fitness', 'health & fitness')
+	c = c.str.replace('home|house & home/style', 'home & garden')
+	c = c.str.replace('metropolitian', 'metropolitan')
+	c = c.str.replace('new jersey.*', 'new jersey weekly')
+	c = c.str.replace('connecticut weekly|new jersey weekly|long island weekly|the city weekly.*|westchester weekly', 'city & region weekly')
+	c = c.str.replace('thursday styles|styles of the times', 'style')
+	c = c.str.replace('.*design.*magazine|.*fashion.*magazine|.*style.*magazine|.*travel.*magazine|t: \w+.*', 't magazine')
+	c = c.str.replace('adventure sports|sports sports', 'sports')
+	c = c.str.replace('circuits|flight', 'technology')
+	c = c.str.strip()
+	return c
 
 
 def save_data(df, filename):
