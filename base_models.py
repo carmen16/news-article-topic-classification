@@ -48,6 +48,7 @@ class MultNB:
 		plt.ylabel('Accuracy')
 		plt.ylim(0, 1)
 		plt.legend()
+		plt.savefig('mnb_accuracy.png', orientation='landscape')
 
 
 class LogReg:
@@ -99,3 +100,5 @@ class LogReg:
 		plt.ylabel('Accuracy')
 		plt.ylim(0, 1)
 		plt.legend()
+		plt.savefig('lr_accuracy.png', orientation='landscape')
+
