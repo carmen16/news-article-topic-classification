@@ -70,7 +70,7 @@ def clean_labels(c):
 	c = c.str.replace('home|house & home/style', 'home & garden')
 	c = c.str.replace('metropolitian', 'metropolitan')
 	c = c.str.replace('new jersey.*', 'new jersey weekly')
-	c = c.str.replace('connecticut weekly|new jersey weekly|long island weekly|the city weekly.*|westchester weekly', 'city & region weekly')
+	# c = c.str.replace('connecticut weekly|new jersey weekly|long island weekly|the city weekly.*|westchester weekly', 'city & region weekly')
 	c = c.str.replace('thursday styles|styles of the times', 'style')
 	c = c.str.replace('.*design.*magazine|.*fashion.*magazine|.*style.*magazine|.*travel.*magazine|t: \w+.*', 't magazine')
 	c = c.str.replace('adventure sports|sports sports', 'sports')
@@ -93,7 +93,8 @@ def process_data():
 	labels = pd.DataFrame(clean_labels(df.desk))
 	print('Cleaned labels')
 	
-	df_final = pd.DataFrame(pd.concat([labels, df.full_text, df.lead_paragraph,
+	df_final = pd.DataFrame(pd.concat([labels,
+		df.full_text, df.lead_paragraph, df.headline,
 		pd.DataFrame(nouns, columns={'nouns'}),
 		pd.DataFrame(lemmas, columns={'lemmas'})], axis=1))
 

@@ -10,7 +10,7 @@ class MultNB:
 	def __init__(self, alpha=list(2. ** np.arange(-12, 3, 0.5))):
 		self.alpha = alpha
 
-	def accuracy_table(self, sv_obj):
+	def test_models(self, sv_obj):
 		# Takes SplitVectorize object and creates accuracy table
 		accuracy = []
 		for i in range(len(self.alpha)):
@@ -19,18 +19,24 @@ class MultNB:
 			accuracy.append(mnb.score(sv_obj.tv_dev, sv_obj.dev_labels))
 		
 		# Combine to dataframe
-		pd.options.display.float_format = '{:,.5f}'.format
-		df = pd.concat([pd.DataFrame([sv_obj.name]*len(self.alpha), columns={'name'}),
+		pd.options.display.float_format = '{:,.8f}'.format
+		df = pd.concat([pd.DataFrame([sv_obj.name]*len(self.alpha), columns={'input'}),
 			pd.DataFrame(self.alpha, columns={'alpha'}),
 			pd.DataFrame(accuracy, columns={'accuracy'})], axis=1)
-		return df
+		sv_obj.mnb_accuracy_table_ = df
 
-	def plot_accuracy(self, models, colors=['blue', 'red', 'green', 'orange']):
+		# Hold onto best model
+		best_alpha = df[df.accuracy == max(df.accuracy)].alpha.iloc[0]
+
+		sv_obj.best_mnb_model_ = MultinomialNB(alpha=best_alpha)
+		sv_obj.best_mnb_model_.fit(sv_obj.tv_train, sv_obj.train_labels)
+
+	def plot_accuracy(self, models, colors=['blue', 'red', 'green', 'orange', 'pink']):
 		# Combine accuracy tables into one to find the most accurate model
 		x = models[0]
 		for i in range(len(models)-1):
 			x = pd.concat([x, models[i+1]], axis=0)
-		x = x.reset_index()[['name','alpha','accuracy']]
+		x = x.reset_index()[['input','alpha','accuracy']]
 		self.combined_accuracy_ = x
 
 		print('Best Multinomial Naïve Bayes model:')
@@ -41,11 +47,11 @@ class MultNB:
 		log_alpha = np.log2(self.alpha)
 
 		for i in range(len(models)):
-			plt.plot(log_alpha, models[i].accuracy, color=self.colors[i], marker='o', label=models[i].name[0])
+			plt.plot(log_alpha, models[i].accuracy, color=self.colors[i], marker='o', label=models[i].input[0])
 
 		plt.title('Multinomial Naïve Bayes on TFIDF Vectorizer')
 		plt.xlabel('Log2(Alpha)')
-		plt.ylabel('Accuracy')
+		plt.ylabel('Accuracy on Dev Data')
 		plt.ylim(0, 1)
 		plt.legend()
 		plt.savefig('mnb_accuracy.png', orientation='landscape')
@@ -57,7 +63,7 @@ class LogReg:
 		self.C = C
 		self.penalties = penalties
 
-	def accuracy_table(self, sv_obj):
+	def test_models(self, sv_obj):
 		# Takes SplitVectorize object and creates accuracy table
 		accuracy = []
 		for i in self.penalties:
@@ -68,18 +74,24 @@ class LogReg:
 	
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format
-		df = pd.concat([pd.DataFrame([sv_obj.name]*len(self.C)*2, columns={'name'}),
+		df = pd.concat([pd.DataFrame([sv_obj.name]*len(self.C)*2, columns={'input'}),
 			pd.DataFrame(['L1']*len(self.C) + ['L2']*len(self.C), columns={'penalty'}),
 			pd.DataFrame(self.C*len(self.penalties), columns={'C'}), pd.DataFrame(accuracy, columns={'accuracy'})], axis=1)
-		return df
+		sv_obj.lr_accuracy_table_ = df
 
+		# Hold onto best model
+		best_C = df[df.accuracy == max(df.accuracy)].C.iloc[0]
+		best_penalty = df[df.accuracy == max(df.accuracy)].penalty.iloc[0].lower()
 
-	def plot_accuracy(self, models, colors=['blue', 'red', 'green', 'orange']):
+		sv_obj.best_lr_model_ = LogisticRegression(C=best_C, penalty=best_penalty)
+		sv_obj.best_lr_model_.fit(sv_obj.tv_train, sv_obj.train_labels)
+
+	def plot_accuracy(self, models, colors=['blue', 'red', 'green', 'orange', 'pink']):
 		# Combine accuracy tables into one to find the most accurate model
 		x = models[0]
 		for i in range(len(models)-1):
 			x = pd.concat([x, models[i+1]], axis=0)
-		x = x.reset_index()[['name','penalty','C','accuracy']]
+		x = x.reset_index()[['input','penalty','C','accuracy']]
 		self.combined_accuracy_ = x
 
 		print('Best Logistic Regression model:')
@@ -91,13 +103,13 @@ class LogReg:
 
 		for i in range(len(models)):
 			plt.plot(log_C, models[i].accuracy[np.where(models[i].penalty == 'L1')[0]],
-				color=self.colors[i], linestyle='dotted', marker='x', label=models[i].name[0]+'-L1')
+				color=self.colors[i], linestyle='dotted', marker='x', label=models[i].input[0]+'-L1')
 			plt.plot(log_C, models[i].accuracy[np.where(models[i].penalty == 'L2')[0]],
-				color=self.colors[i], marker='o', label=models[i].name[0]+'-L2')
+				color=self.colors[i], marker='o', label=models[i].input[0]+'-L2')
 
 		plt.title('Logistic Regression on TFIDF Vectorizer')
 		plt.xlabel('Log10(C)')
-		plt.ylabel('Accuracy')
+		plt.ylabel('Accuracy on Dev Data')
 		plt.ylim(0, 1)
 		plt.legend()
 		plt.savefig('lr_accuracy.png', orientation='landscape')
