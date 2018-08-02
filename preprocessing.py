@@ -50,6 +50,9 @@ def create_nouns_lemmas(data):
 		nouns.append(noun_string)
 		lemmas.append(lemma_string)
 
+		if i > 0 and (i+1) % 1000 == 0:
+			print('Created nouns and lemmas for '+str(i+1)+' articles')
+
 	return pd.DataFrame(nouns, columns={'nouns'}), pd.DataFrame(lemmas, columns={'lemmas'})
 
 
@@ -60,12 +63,12 @@ def clean_labels(c):
 	c = c.str.replace(';', '')
 	c = c.str.replace(' and ', ' & ')
 	c = c.str.replace('\\', '/')
-	c = c.str.replace('arts & .*|cultural|museums|the arts/cultural|.*weekend.*', 'arts')
+	c = c.str.replace('arts & .*|cultural|museums|the arts/cultural|.*weekend.*', 'arts & leisure')
 	c = c.str.replace('automobiles', 'cars')
 	c = c.str.replace('classifed|classifieds|job market', 'classified')
 	c = c.str.replace('.*dining out.*', 'dining')
 	c = c.str.replace('education.*', 'education')
-	c = c.str.replace('business/financ.*|business world magazine|e-commerce|.*money.*financ.*|sundaybusiness', 'business')
+	c = c.str.replace('business/financ.*|business world magazine|e-commerce|.*money.*financ.*|financial|sundaybusiness', 'business & financial')
 	c = c.str.replace('health&fitness', 'health & fitness')
 	c = c.str.replace('home|house & home/style', 'home & garden')
 	c = c.str.replace('metropolitian', 'metropolitan')
@@ -75,6 +78,7 @@ def clean_labels(c):
 	c = c.str.replace('.*design.*magazine|.*fashion.*magazine|.*style.*magazine|.*travel.*magazine|t: \w+.*', 't magazine')
 	c = c.str.replace('adventure sports|sports sports', 'sports')
 	c = c.str.replace('circuits|flight', 'technology')
+	c = c.str.replace('the city weekly.*', 'the city weekly')
 	c = c.str.strip()
 	return c
 
@@ -85,10 +89,10 @@ def save_data(df, filename):
 
 def process_data():
 	df = pd.read_csv('data/nyt_corpus.csv')
-	print('Imported file')
+	print('Imported data file')
 
 	nouns, lemmas = create_nouns_lemmas(df.full_text)
-	print('Created nouns and lemmas')
+	print('Created nouns and lemmas for all articles')
 
 	labels = pd.DataFrame(clean_labels(df.desk))
 	print('Cleaned labels')
@@ -99,7 +103,7 @@ def process_data():
 		pd.DataFrame(lemmas, columns={'lemmas'})], axis=1))
 
 	save_data(df_final, 'data/nyt_corpus_cleaned.csv')
-	print('Saved file')
+	print('Saved cleaned data file')
 
 
 if __name__ == '__main__':

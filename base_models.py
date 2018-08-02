@@ -20,7 +20,7 @@ class MultNB:
 		
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format
-		df = pd.concat([pd.DataFrame([sv_obj.name]*len(self.alpha), columns={'input'}),
+		df = pd.concat([pd.DataFrame([sv_obj.name_]*len(self.alpha), columns={'input'}),
 			pd.DataFrame(self.alpha, columns={'alpha'}),
 			pd.DataFrame(accuracy, columns={'accuracy'})], axis=1)
 		sv_obj.mnb_accuracy_table_ = df
@@ -59,7 +59,7 @@ class MultNB:
 
 class LogReg:
 
-	def __init__(self, C=list(10. ** np.arange(-8, 8)), penalties=['l1', 'l2']):
+	def __init__(self, C=list(10. ** np.arange(-7, 7)), penalties=['l1', 'l2']):
 		self.C = C
 		self.penalties = penalties
 
@@ -74,7 +74,7 @@ class LogReg:
 	
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format
-		df = pd.concat([pd.DataFrame([sv_obj.name]*len(self.C)*2, columns={'input'}),
+		df = pd.concat([pd.DataFrame([sv_obj.name_]*len(self.C)*2, columns={'input'}),
 			pd.DataFrame(['L1']*len(self.C) + ['L2']*len(self.C), columns={'penalty'}),
 			pd.DataFrame(self.C*len(self.penalties), columns={'C'}), pd.DataFrame(accuracy, columns={'accuracy'})], axis=1)
 		sv_obj.lr_accuracy_table_ = df

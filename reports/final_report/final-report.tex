@@ -1,0 +1,186 @@
+\documentclass[11pt,a4paper]{article}
+
+%\usepackage[nohyperref]{acl2018} % references acl2018.sty
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+
+%\aclfinalcopy % Uncomment this line to show the author and remove the line numbers on the sides
+
+\newcommand\BibTeX{B{\sc ib}\TeX}
+
+\title{Final Project Report}
+
+\author{Carmen Easterwood \\
+  W266 Natural Language Processing with Deep Learning \\
+  Summer 2018 \\
+}
+
+\date{August 10, 2018}
+
+%%%%%%
+% End header information
+%%%%%%
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Blah blah blah blah blah.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Stuff {\em stuff}
+
+\section{Background}
+\label{sec:back}
+
+Stuff \textbf{stuff}
+
+\section{Methods}
+\label{sec:methods}
+
+Stuff. Subsection~\ref{ssec:dataset}. Section~\ref{sec:methods}.
+
+\subsection{Dataset}
+\label{ssec:dataset}
+
+Stuff
+
+\subsection{Model Input}
+\label{ssec:input}
+
+{\small\tt Small stuff}. \url{url.com}.
+
+\begin{table}
+\centering
+\begin{tabular}{| l | r r r | r r r |}
+	\hline
+	\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c|}{\textbf{Training Words}} & \multicolumn{3}{c|}{\textbf{Training Vocab (Unique Words)}} \\
+	\cline{2-7}
+	& \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} & \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} \\
+	\hline
+	Full Text & & & & & & \\
+	Lead Paragraph & & & & & & \\
+	Headlines	& & & & & & \\
+	Nouns Only & & & & & & \\
+	Lemmatized & & & & & & \\
+	\hline
+\end{tabular}
+\caption{Model Inputs}
+\end{table}
+
+\subsection{Model Output}
+\label{ssec:output}
+
+Stuff. {\tt Stuff}.
+
+%\begin{table}
+%\centering
+%\begin{tabular}{|p{1in}|p{2in}|p{1in}|p{2in}|}
+%\hline
+%Desk & General Descriptor & Online Sections & Taxonomic Classifier \\
+%\hline
+%Foreign Desk & Immigration and Refugees; Jews; Music; Religion and Churches & World & Top/News; Top/News/World/Countries and Territories/Austria; Top/News/World/Europe; ? \\
+%\hline
+%Metropolitan Desk & Murders and Attempted Murders; Basketball; Culture; Children and Youth & New York and Region & Top/News/U.S./U.S. States, Territories and Possessions/New Yorks; Top/News/U.S./Mid-Atlantic; Top/News/Sports/Pro Basketball; ? \\
+%\hline
+%Book Review Desk & Books and Literature & Arts; Books & Top/Features/Books/Book Reviews; Top/Feature/Arts; Top/Features/Books \\
+%\hline
+%Editorial Desk & & Opinion & Top/Opinion/Opinion/Letters; Top/Opinion; Top/Opinion/Opinion \\
+%\hline
+%National Desk & & U.S. & Top/New/U.S.; Top/News \\
+%\hline
+%Metropolitan Desk & & New York and Region & Top/News/New York and Region \\
+%\hline
+%Classified & & Paid Death Notices & Top/Classifieds/Paid Death Notices \\
+%\hline
+%Leisure/Weekend Desk & & Arts & Top/Features/Arts \\
+%\hline
+%\end{tabular}
+%\caption{TBD}
+%\end{table}
+
+\subsection{Models}
+\label{sec:models}
+
+Stuff
+
+\begin{itemize}
+\item A
+\item A
+\end{itemize}
+
+\noindent Stuff
+
+\begin{quote}
+\begin{verbatim}
+Stuff and things.
+\end{verbatim}
+\end{quote}
+
+See Table~\ref{cit-table}.
+
+\begin{table}
+\centering
+\begin{tabular}{lll}
+  output & natbib & previous ACL style files\\
+  \hline
+  %\citep{Glavas:17} & \verb|\citep| & \verb|\cite| \\
+  %\citet{Glavas:17} & \verb|\citet| & \verb|\newcite| \\
+  %\citeyearpar{Glavas:17} & \verb|\citeyearpar| & \verb|\shortcite| \\
+\end{tabular}
+\caption{\label{cit-table}Citation commands supported by the style file. The citation style is based on the natbib package and supports all natbib citation commands. It also supports commands defined in previous ACL style files for compatibility.}
+\end{table}
+
+%\textbf{Citations}: Citations within the text appear in parentheses as~\cite{Glavas:17} or, if the author's name appears in the text itself, as Glavas~\shortcite{Glavas:17}. Collapse multiple citations as in~\cite{Glavas:17,Wermter:02}.
+
+Refrain from using full citations as sentence constituents. We suggest that instead of
+\begin{quote}
+  %``\cite{Glavas:17} showed that ...''
+\end{quote}
+you use
+\begin{quote}
+%``Gusfield \shortcite{Glavas:17}   showed that ...''
+\end{quote}
+
+%\citep{Karan:16}
+%\citet{Karan:16}
+%\citealp{Karan:16}
+%\citeyearpar{Karan:16}
+
+%\citep{Martin:15}
+%\citet{Martin:15}
+%\citealp{Martin:15}
+%\citeyearpar{Martin:15}
+
+%\citep{Wermter:02}
+%\citet{Wermter:02}
+%\citealp{Wermter:02}
+%\citeyearpar{Wermter:02}
+
+\begin{quote}
+%``We previously showed \cite{Glavas:17} ...''  
+\end{quote}
+should be avoided. Instead, use citations such as 
+\begin{quote}
+%``\citeauthor{Glavas:17} \shortcite{Glavas:17} previously showed ... ''
+\end{quote}
+
+\section{Results}
+\label{sec:results}
+
+Stuff
+
+\section{Conclusion}
+\label{sec:conc}
+
+Stuff
+
+\bibliography{final-report} % references .bib file
+\bibliographystyle{acl_natbib} % references acl_natbib.bst
+
+\end{document}
