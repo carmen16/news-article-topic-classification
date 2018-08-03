@@ -10,25 +10,25 @@ class SplitVectorize:
 	def __init__(self, df, articles, article_type, labels='desk', n_labels=20):
 		self.labels = labels
 		self.articles = articles
-		self.n_labels = n_labels
 		#self.category_min = category_min
 		self.name_ = article_type
 
 		# Get list of top N labels
 		label_count = df.groupby(self.labels, as_index=False).count().sort_values(by=['headline'], ascending=False).reset_index()[[self.labels, 'headline']].rename(columns={'headline':'cnt'})
-		self.top_n_labels_ = set(label_count[self.labels][:self.n_labels])
-		plt.bar(label_count[self.labels][:self.n_labels], label_count.cnt[:self.n_labels], color='#1f77b4')
-		plt.title('Top '+str(self.n_labels)+' Categories')
-		plt.xticks(label_count[self.labels][:self.n_labels], rotation='vertical')
+		self.top_n_labels_ = set(label_count[self.labels][:n_labels])
+		plt.bar(label_count[self.labels][:n_labels], label_count.cnt[:n_labels], color='#1f77b4')
+		plt.title('Top '+str(n_labels)+' Categories')
+		plt.xticks(label_count[self.labels][:n_labels], rotation='vertical')
 		plt.xlabel(self.labels)
 		plt.ylabel('Number of Articles')
 		plt.tight_layout()
-		plt.savefig('top_n_labels_histogram.png')
+		plt.savefig('plots/top_n_labels_histogram.png')
 
 		# Overwrite extra label values with 'other'
 		cleaned_labels = df[self.labels].apply(lambda x: x if x in self.top_n_labels_ else '<OTHER>')
 		self.df = pd.DataFrame(pd.concat([pd.DataFrame(cleaned_labels, columns={self.labels}),
 			df[self.articles]], axis=1))
+		self.n_classes = n_labels + 1
 
 
 	def train_test_split(self, rand_seed):
