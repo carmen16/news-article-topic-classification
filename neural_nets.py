@@ -1,10 +1,14 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from nltk.tokenize.treebank import TreebankWordTokenizer
 
 class NeuralNets:
 
-	def __init__(self, embed_dim=100): #load_glove_vectors
+	def __init__(self):
+		pass
+
+	def load_glove_vectors(self, embed_dim=100):
 		self.embed_dim = embed_dim
 		# Convert txt file into dict with words as keys and list(float) as values
 		filename = 'GloVe/glove.6B.'+str(self.embed_dim)+'d.txt'
@@ -21,16 +25,25 @@ class NeuralNets:
 
 
 	def tokenize_pad(self, sv_obj):
+		tokens = sv_obj.train_data.str.split()
+		vocab = int(round(sv_obj.train_vocab_size_ * 0.8, 0))
+
 		# Convert words to IDs
-		t = tf.keras.preprocessing.text.Tokenizer()
-		t.fit_on_texts(sv_obj.train_data)
+		t = tf.keras.preprocessing.text.Tokenizer(num_words=vocab)
+		t.fit_on_texts(tokens)#sv_obj.train_data)
 		train = t.texts_to_sequences(sv_obj.train_data)
 		test = t.texts_to_sequences(sv_obj.test_data)
 
-		# Save index of words to IDs and create matrix of GloVe weights
+		# Save index of words to IDs
 		sv_obj.word_index = t.word_index
 		print('{}:\n\t{:,} unique tokens'.format(sv_obj.name_, len(sv_obj.word_index)))
 
+		# Save index of IDs to words
+		sv_obj.id_index = {}
+		for key, val in sv_obj.word_index.items():
+			sv_obj.id_index[val] = key
+
+		# Create matrix of GloVe weights
 		sv_obj.embed_matrix = np.zeros((len(sv_obj.word_index) + 1, self.embed_dim))
 		for word, i in sv_obj.word_index.items():
 			embed_vector = self.embed_index.get(word)
@@ -40,20 +53,9 @@ class NeuralNets:
 		print('\tCreated matrix of {:,}-dimensional weights for {:,} tokens'.format(sv_obj.embed_matrix.shape[1], sv_obj.embed_matrix.shape[0]))
 
 		# Gather some statistics on training data
-		#words = 0
 		lens = []
-		#vocab = []
-		#unq = []
 		for i in range(len(train)):
-		#	words += len(train[i])
 			lens.append(len(train[i]))
-		#	vocab.append(max(train[i]))
-		#	unq.append(len(set(train[i])))
-
-		#sv_obj.train_words_ = words
-		#sv_obj.train_avg_words_ = sv_obj.train_words_ / len(train)
-		#sv_obj.train_vocab_size_ = max(vocab)
-		#sv_obj.train_avg_unq_words_ = sum(unq) / len(train)
 
 		# Pad word IDs to 90% of max article length
 		sv_obj.maxlen = int(round(np.percentile(lens, 90), 0))
@@ -76,8 +78,8 @@ class NeuralNets:
 
 		embedding_layer = tf.keras.layers.Embedding(len(sv_obj.word_index) + 1, self.embed_dim,
 			weights=[sv_obj.embed_matrix],
-			input_length=sv_obj.maxlen,
-			trainable=False)
+			input_length=sv_obj.maxlen)#,
+			#trainable=False)
 
 		model = tf.keras.Sequential([
 			embedding_layer,

@@ -2,7 +2,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from nltk.tokenize.treebank import TreebankWordTokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 class SplitVectorize:
@@ -16,19 +15,21 @@ class SplitVectorize:
 		# Get list of top N labels
 		label_count = df.groupby(self.labels, as_index=False).count().sort_values(by=['headline'], ascending=False).reset_index()[[self.labels, 'headline']].rename(columns={'headline':'cnt'})
 		self.top_n_labels_ = set(label_count[self.labels][:n_labels])
-		plt.bar(label_count[self.labels][:n_labels], label_count.cnt[:n_labels], color='#1f77b4')
-		plt.title('Top '+str(n_labels)+' Categories')
-		plt.xticks(label_count[self.labels][:n_labels], rotation='vertical')
-		plt.xlabel(self.labels)
-		plt.ylabel('Number of Articles')
-		plt.tight_layout()
-		plt.savefig('plots/top_n_labels_histogram.png')
 
 		# Overwrite extra label values with 'other'
 		cleaned_labels = df[self.labels].apply(lambda x: x if x in self.top_n_labels_ else '<OTHER>')
 		self.df = pd.DataFrame(pd.concat([pd.DataFrame(cleaned_labels, columns={self.labels}),
 			df[self.articles]], axis=1))
-		self.n_classes = n_labels + 1
+		label_count = self.df.groupby(self.labels, as_index=False).count().sort_values(by=[self.articles], ascending=False).reset_index()[[self.labels, self.articles]]
+		self.n_classes = len(label_count[self.labels])
+
+		plt.bar(label_count[self.labels], label_count[self.articles], color='#1f77b4')
+		plt.title('Top '+str(n_labels)+' Categories + <OTHER>')
+		plt.xticks(label_count[self.labels], rotation='vertical')
+		plt.xlabel(self.labels)
+		plt.ylabel('Number of Articles')
+		plt.tight_layout()
+		plt.savefig('plots/top_n_labels_histogram.png')
 
 
 	def train_test_split(self, rand_seed):
@@ -57,11 +58,9 @@ class SplitVectorize:
 		self.test_data, self.test_labels = test[self.articles], test[self.labels]
 
 		# Count number of training words
-		tokenizer = TreebankWordTokenizer()
 		num_words = 0
-
 		for i in range(len(self.train_data)):
-			num_words += len(tokenizer.tokenize(self.train_data[i]))
+			num_words += len(self.train_data[i].split())
 		self.train_words_ = num_words
 		self.train_avg_words_ = num_words / self.train_data.shape[0]
 

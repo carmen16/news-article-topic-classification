@@ -1,9 +1,46 @@
 import pandas as pd
 import numpy as np
+import re
 from nltk import pos_tag
 from nltk.corpus import wordnet as wn
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize.treebank import TreebankWordTokenizer
+
+def clean_input_column(c):
+	# Lower case everything
+	c = c.str.lower().str.strip()
+
+	# Separate punctuation from words
+	outer_list = []
+	punc = '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'
+	for i in range(len(c)):
+		if pd.isnull(c[i]):
+			outer_list.append(np.nan)
+		else:
+			tokenizer = TreebankWordTokenizer()
+			tokens = tokenizer.tokenize(c[i])
+
+			inner_list = []
+			for j in tokens:
+				for k in punc:
+					word_str = '([A-Za-z])'
+					punc_str = '('+str('\\')+k+')'
+					s1 = re.search(word_str+punc_str, j)
+					if s1 is not None:
+						j = re.sub(word_str+punc_str, s1.group(1)+' '+s1.group(2), j)
+					s2 = re.search(punc_str+word_str, j)
+					if s2 is not None:
+						j = re.sub(punc_str+word_str, s2.group(1)+' '+s2.group(2), j)
+				inner_list.extend(j.split())
+			outer_list.append(' '.join(inner_list))
+
+		if (i+1) % 1000 == 0:
+			print('Cleaned '+str(i+1)+' entries in '+c.name)
+
+	c = pd.DataFrame({c.name: outer_list})
+
+	return c
+
 
 def treebank_to_wn_tags(tagged_tokens):
 	# Replaces Penn Treebank POS tags with WordNet POS tags
@@ -20,11 +57,11 @@ def treebank_to_wn_tags(tagged_tokens):
 		else:
 			wn_tags.append((x[0], wn.NOUN)) # catch-all for determinants, prepositions, etc.
 	return wn_tags
+
 	
 def create_nouns_lemmas(data):
 	# Given a list or column of articles, returns a nouns-only version and a
 	# lemmatized version of the articles
-	tokenizer = TreebankWordTokenizer()
 	lemmatizer = WordNetLemmatizer()
 
 	nouns = []
@@ -32,11 +69,10 @@ def create_nouns_lemmas(data):
 
 	for i in range(len(data)):
 		if pd.isnull(data[i]):
-			noun_string = np.nan
-			lemma_string = np.nan
+			noun_list = np.nan
+			lemma_list = np.nan
 		else:
-			tokens = tokenizer.tokenize(data[i])
-			tagged_tokens = pos_tag(tokens)
+			tagged_tokens = pos_tag(data[i].split())
 			
 			# For nouns
 			noun_list = [x[0] for x in tagged_tokens if x[1][0] == 'N']
@@ -53,7 +89,7 @@ def create_nouns_lemmas(data):
 		if i > 0 and (i+1) % 1000 == 0:
 			print('Created nouns and lemmas for '+str(i+1)+' articles')
 
-	return pd.DataFrame(nouns, columns={'nouns'}), pd.DataFrame(lemmas, columns={'lemmas'})
+	return pd.DataFrame({'nouns': nouns}), pd.DataFrame({'lemmas': lemmas})
 
 
 def clean_labels(c):
@@ -91,16 +127,21 @@ def process_data():
 	df = pd.read_csv('data/nyt_corpus.csv')
 	print('Imported data file')
 
-	nouns, lemmas = create_nouns_lemmas(df.full_text)
+	full_text = clean_input_column(df.full_text)
+	print('Cleaned full_text')
+	lead_paragraph = clean_input_column(df.lead_paragraph)
+	print('Cleaned lead_paragraph')
+	headline = clean_input_column(df.headline)
+	print('Cleaned headlines')
+
+	nouns, lemmas = create_nouns_lemmas(full_text.full_text)
 	print('Created nouns and lemmas for all articles')
 
 	labels = pd.DataFrame(clean_labels(df.desk))
 	print('Cleaned labels')
 	
 	df_final = pd.DataFrame(pd.concat([labels,
-		df.full_text, df.lead_paragraph, df.headline,
-		pd.DataFrame(nouns, columns={'nouns'}),
-		pd.DataFrame(lemmas, columns={'lemmas'})], axis=1))
+		full_text, lead_paragraph, headline, nouns, lemmas], axis=1))
 
 	save_data(df_final, 'data/nyt_corpus_cleaned.csv')
 	print('Saved cleaned data file')
