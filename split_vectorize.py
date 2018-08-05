@@ -24,7 +24,7 @@ class SplitVectorize:
 		self.n_classes = len(label_count[self.labels])
 
 		plt.bar(label_count[self.labels], label_count[self.articles], color='#1f77b4')
-		plt.title('Top '+str(n_labels)+' Categories + <OTHER>')
+		#plt.title('Top '+str(n_labels)+' Categories + <OTHER>')
 		plt.xticks(label_count[self.labels], rotation='vertical')
 		plt.xlabel(self.labels)
 		plt.ylabel('Number of Articles')
