@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+import sys
 from nltk import pos_tag
 from nltk.corpus import wordnet as wn
 from nltk.stem import WordNetLemmatizer
@@ -123,8 +124,8 @@ def save_data(df, filename):
 	df.to_csv(filename, index = False)
 
 
-def process_data():
-	df = pd.read_csv('data/nyt_corpus.csv')
+def process_data(n):
+	df = pd.read_csv('data/nyt_corpus_'+str(n)+'.csv')
 	print('Imported data file')
 
 	full_text = clean_input_column(df.full_text)
@@ -135,7 +136,7 @@ def process_data():
 	print('Cleaned headlines')
 
 	nouns, lemmas = create_nouns_lemmas(full_text.full_text)
-	print('Created nouns and lemmas for all articles')
+	print('Created nouns and lemmas')
 
 	labels = pd.DataFrame(clean_labels(df.desk))
 	print('Cleaned labels')
@@ -143,10 +144,11 @@ def process_data():
 	df_final = pd.DataFrame(pd.concat([labels,
 		full_text, lead_paragraph, headline, nouns, lemmas], axis=1))
 
-	save_data(df_final, 'data/nyt_corpus_cleaned.csv')
+	save_data(df_final, 'data/nyt_corpus_cleaned_'+str(n)+'.csv')
 	print('Saved cleaned data file')
 
 
 if __name__ == '__main__':
-	process_data()
+	n = int(sys.argv[1])
+	process_data(n)
 

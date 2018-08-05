@@ -270,10 +270,10 @@ def create_csv_file(n):
 		if article_list.index(article) % 100 == 0:
 			print('Parsing article ' + str(article_list.index(article)))
 
-		article_soup = get_article(open(article))
+		article_soup = get_article(open('data/'+article))
 		parse_article(article_soup, article_obj)
 
-	save_data(article_obj, 'data/nyt_corpus.csv')
+	save_data(article_obj, 'data/nyt_corpus_'+str(n)+'.csv')
 
 
 if __name__ == '__main__':
