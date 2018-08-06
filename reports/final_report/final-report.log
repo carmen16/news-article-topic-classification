@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  4 AUG 2018 18:35
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  5 AUG 2018 15:46
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -109,39 +109,25 @@ Package graphics Info: Driver file: pdftex.def on input line 99.
 \Gin@req@height=\dimen107
 \Gin@req@width=\dimen108
 )
-(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/pdflscape.sty
-Package: pdflscape 2016/05/14 v0.11 Display of landscape pages in PDF (HO)
-
-(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/lscape.sty
-Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
-)
-(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ifpdf.sty
-Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
-)
-Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
-
-(/usr/local/texlive/2017/texmf-dist/tex/generic/ifxetex/ifxetex.sty
-Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
-))
 (/usr/local/texlive/2017/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip10
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 ) (./final-report.aux)
 \openout1 = `final-report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 31.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 32.
+LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 32.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
@@ -165,6 +151,9 @@ Package: pdftexcmds 2017/03/19 v0.25 Utility functions of pdfTeX for LuaTeX (HO
 (/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ifluatex.sty
 Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
 Package ifluatex Info: LuaTeX not detected.
+)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
 )
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
@@ -206,63 +195,64 @@ e
 ))
 ABD: EveryShipout initializing macros
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 32.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 33.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 32.
+(Font)              <12> on input line 33.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 32.
+(Font)              <8> on input line 33.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 32.
-LaTeX Font Info:    Try loading font information for U+lasy on input line 32.
+(Font)              <6> on input line 33.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 33.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 32.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 33.
 Missing character: There is no ¨ in font ptmr7t!
 
-Underfull \hbox (badness 1917) in paragraph at lines 50--51
+Underfull \hbox (badness 1917) in paragraph at lines 51--52
 []\OT1/ptm/m/n/10.95 Other re-cent pa-pers have looked at su-per-
  []
 
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 56.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 57.
 [1{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 
 ]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 78.
+(Font)              <9> on input line 79.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 78.
+(Font)              <5> on input line 79.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 80.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 81.
 
-Overfull \hbox (196.07568pt too wide) in paragraph at lines 78--92
+Overfull \hbox (196.07568pt too wide) in paragraph at lines 79--93
  [][] 
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 99.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 100.
+
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 114.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 115.
 
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 114.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 115.
 
-Overfull \hbox (273.47333pt too wide) in paragraph at lines 110--127
+Overfull \hbox (273.47333pt too wide) in paragraph at lines 111--128
  [][] 
  []
 
 
-Overfull \hbox (59.00217pt too wide) in paragraph at lines 136--156
+Overfull \hbox (59.00217pt too wide) in paragraph at lines 137--157
  [][] 
  []
 
@@ -271,27 +261,60 @@ File: ../../plots/top_n_labels_histogram.png Graphic file (type png)
 
 <use ../../plots/top_n_labels_histogram.png>
 Package pdftex.def Info: ../../plots/top_n_labels_histogram.png used on input l
-ine 164.
-(pdftex.def)             Requested size: 260.17401pt x 173.44933pt.
+ine 165.
+(pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
 
-Overfull \hbox (41.08789pt too wide) in paragraph at lines 164--165
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 165--166
  [][] 
  []
 
-[2 <../../plots/top_n_labels_histogram.png>] (./final-report.bbl
+<../../plots/mnb_accuracy.png, id=10, 433.62pt x 289.08pt>
+File: ../../plots/mnb_accuracy.png Graphic file (type png)
+
+<use ../../plots/mnb_accuracy.png>
+Package pdftex.def Info: ../../plots/mnb_accuracy.png used on input line 187.
+(pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
+
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 187--188
+ [][] 
+ []
+
+<../../plots/lr_accuracy.png, id=11, 433.62pt x 289.08pt>
+File: ../../plots/lr_accuracy.png Graphic file (type png)
+
+<use ../../plots/lr_accuracy.png>
+Package pdftex.def Info: ../../plots/lr_accuracy.png used on input line 194.
+(pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
+
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 194--195
+ [][] 
+ []
+
+[2 <../../plots/top_n_labels_histogram.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 238--239
+[]\OT1/ptm/b/n/9 Lemmas
+ []
+
+
+Overfull \hbox (8.13pt too wide) in paragraph at lines 226--241
+ [][] 
+ []
+
+(./final-report.bbl
 Underfull \hbox (badness 2005) in paragraph at lines 38--43
 []\OT1/ptm/m/n/10 Jeffrey Pen-ning-ton, Richard Socher, and Christo-
  []
 
-) [3
+[3 <../../plots/mnb_accuracy.png> <../../plots/lr_accuracy.png>]) [4
 
-] (./final-report.aux) )
+]
+(./final-report.aux) )
 (\end occurred when \iffalse on line 349 was incomplete) 
 Here is how much of TeX's memory you used:
- 2740 strings out of 492995
- 37655 string characters out of 6132704
- 120356 words of memory out of 5000000
- 6226 multiletter control sequences out of 15000+600000
+ 2711 strings out of 492995
+ 37103 string characters out of 6132704
+ 119584 words of memory out of 5000000
+ 6205 multiletter control sequences out of 15000+600000
  24734 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  39i,10n,37p,685b,268s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -302,10 +325,10 @@ s/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/
 urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utmri8a.pf
 b>
-Output written on final-report.pdf (3 pages, 88504 bytes).
+Output written on final-report.pdf (4 pages, 139993 bytes).
 PDF statistics:
- 38 PDF objects out of 1000 (max. 8388607)
- 25 compressed objects within 1 object stream
+ 45 PDF objects out of 1000 (max. 8388607)
+ 27 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

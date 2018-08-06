@@ -25,8 +25,8 @@ class SplitVectorize:
 
 		plt.bar(label_count[self.labels], label_count[self.articles], color='#1f77b4')
 		#plt.title('Top '+str(n_labels)+' Categories + <OTHER>')
-		plt.xticks(label_count[self.labels], rotation='vertical')
-		plt.xlabel(self.labels)
+		plt.xticks(label_count[self.labels], rotation=45, horizontalalignment='right')
+		#plt.xlabel(self.labels)
 		plt.ylabel('Number of Articles')
 		plt.tight_layout()
 		plt.savefig('plots/top_n_labels_histogram.png')

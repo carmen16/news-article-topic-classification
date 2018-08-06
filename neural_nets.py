@@ -21,22 +21,22 @@ class NeuralNets:
 				vector = np.asarray(line_s[1:], dtype='float32')
 				self.embed_index[word] = vector
 
-		print('Created index of {:,}-dimensional embeddings for {:,} words.'.format(self.embed_dim, len(self.embed_index)))
+		print('Loaded GloVe matrix of {:,}-dimensional embeddings for {:,} words.'.format(self.embed_dim, len(self.embed_index)))
 
 
-	def tokenize_pad(self, sv_obj):
+	def tokenize(self, sv_obj):
 		tokens = sv_obj.train_data.str.split()
-		vocab = int(round(sv_obj.train_vocab_size_ * 0.8, 0))
+		self.vocab = int(round(sv_obj.train_vocab_size_ * 0.8, 0))
+		print('{}:\n\tTraining vocab size: {:,}'.format(sv_obj.name_, self.vocab))
 
 		# Convert words to IDs
-		t = tf.keras.preprocessing.text.Tokenizer(num_words=vocab)
+		t = tf.keras.preprocessing.text.Tokenizer(num_words=self.vocab, oov_token='<unk>')
 		t.fit_on_texts(tokens)#sv_obj.train_data)
-		train = t.texts_to_sequences(sv_obj.train_data)
-		test = t.texts_to_sequences(sv_obj.test_data)
+		self.train = t.texts_to_sequences(sv_obj.train_data)
+		self.test = t.texts_to_sequences(sv_obj.test_data)
 
 		# Save index of words to IDs
 		sv_obj.word_index = t.word_index
-		print('{}:\n\t{:,} unique tokens'.format(sv_obj.name_, len(sv_obj.word_index)))
 
 		# Save index of IDs to words
 		sv_obj.id_index = {}
@@ -50,17 +50,26 @@ class NeuralNets:
 			if embed_vector is not None:
 				# Words not found in embedding index will be all zeros.
 				sv_obj.embed_matrix[i] = embed_vector
-		print('\tCreated matrix of {:,}-dimensional weights for {:,} tokens'.format(sv_obj.embed_matrix.shape[1], sv_obj.embed_matrix.shape[0]))
 
-		# Gather some statistics on training data
+
+	def pad(self, sv_obj):
+		# Gather length distribution for training data
 		lens = []
-		for i in range(len(train)):
-			lens.append(len(train[i]))
+		for i in range(len(self.train)):
+			lens.append(len(self.train[i]))
 
-		# Pad word IDs to 90% of max article length
-		sv_obj.maxlen = int(round(np.percentile(lens, 90), 0))
-		train_pad = tf.keras.preprocessing.sequence.pad_sequences(train, maxlen=sv_obj.maxlen, padding='post', truncating='post')
-		test_pad = tf.keras.preprocessing.sequence.pad_sequences(test, maxlen=sv_obj.maxlen, padding='post', truncating='post')
+		# Pad word IDs to min(90% of max article length, 500)
+		sv_obj.maxlen = min(int(round(np.percentile(lens, 90), 0)), 500)
+		print('\t90th percentile of length = {:,} --> inputs padded to {:,}.'.format(int(round(np.percentile(lens, 90), 0)), sv_obj.maxlen))
+		train_pad = tf.keras.preprocessing.sequence.pad_sequences(self.train, maxlen=sv_obj.maxlen, padding='post', truncating='post')
+		test_pad = tf.keras.preprocessing.sequence.pad_sequences(self.test, maxlen=sv_obj.maxlen, padding='post', truncating='post')
+
+		# Check new vocab size
+		s = set()
+		for i in range(train_pad.shape[0]):
+			s = s.union(set(train_pad[i]))
+		sv_obj.nn_effective_vocab_ = len(s)
+		print('\tVocab reduced to {:,} by padding operation ({:.0%})'.format(len(s), (len(s)/self.vocab)-1))
 
 		# Attach ID sequences to SV object
 		sv_obj.train_ids = train_pad
@@ -95,10 +104,12 @@ class NeuralNets:
 
 		model.fit(train_data, train_labels, epochs=epochs)
 		print('Fit')
+		sv_obj.nn_model_ = model
 
 		test_loss, test_acc = model.evaluate(test_data, test_labels)
 		print('Test loss:', test_loss)
 		print('Test accuracy:', test_acc)
+		sv_obj.nn_accuracy_ = test_acc
 
 		pred = model.predict(test_data)
 		print('First prediction (probabilities):', pred[0])
@@ -107,7 +118,3 @@ class NeuralNets:
 
 		print(model.summary())
 
-		return model
-
-
-#def imdb_nn(sv_obj):

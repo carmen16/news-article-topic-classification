@@ -1,11 +1,12 @@
 \documentclass[11pt,a4paper]{article}
 
 \usepackage[nohyperref]{acl2018} % references acl2018.sty
+%\usepackage{cite}
 \usepackage{times}
 \usepackage{latexsym}
 \usepackage{multirow}
 \usepackage{graphicx}
-\usepackage{pdflscape}
+%\usepackage{pdflscape}
 \usepackage{url}
 
 \aclfinalcopy % Uncomment this line to show the author and remove the line numbers on the sides
@@ -81,11 +82,11 @@ Based on my review of the literature, I tested five different model inputs, some
 		\cline{2-7}
 		& \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} & \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} \\
 		\hline
-		Full Text & 5,033,755 & 100 & 684 & 87,541 & 100 & 264 \\
-		Lead Paragraph & 740,321 & 15 & 103 & 40,309 & 46 & 61 \\
-		Headlines	& 57,752 & 1 & 8 & 11,150 & 13 & 6 \\
-		Nouns Only & 1,371,922 & 27 & 184 & 65,029 & 74 & 112 \\
-		Lemmatized & 5,120,323 & 102 & 686 & 76,109 & 87 & 246 \\
+		Full Text			& 5,032,755	& 100	& 684	& 87,541	& 100	& 264 \\
+		Lead Paragraph	& 740,321		& 15		& 103	& 40,309	& 46		& 61 \\
+		Headlines			& 57,752		& 1		& 8		& 11,150	& 13		& 6 \\
+		Nouns			& 1,349,489	& 27		& 184	& 64,998	& 74		& 112 \\
+		Lemmatized		& 5,032,755	& 100	& 684	& 75,648	& 86		& 245 \\
 		\hline
 	\end{tabular}
 	%}
@@ -161,7 +162,7 @@ After cleaning, roughly 95\% of articles fall into the top 20 categories, and th
 
 \begin{figure}
 \centering
-\includegraphics[scale=0.6]{top_n_labels_histogram}
+\includegraphics[scale=0.55]{top_n_labels_histogram}
 \caption{Frequency of Top 20 Labels + \small{\tt <OTHER>}}
 \label{fig:topnhist}
 \end{figure}
@@ -171,7 +172,29 @@ After cleaning, roughly 95\% of articles fall into the top 20 categories, and th
 
 % For each set of training data, I TF-IDF vectorize it before feeding it into models.
 
-I used multinomial na\"{i}ve Bayes and multi-class logistic regression (one vs. rest) as simple baseline models. I will also be testing more complicated models based on my review of some relevant literature (SVM, CNN, and gradient boosted trees).
+For each model input, I tested three models:
+
+\begin{enumerate}
+\item Multinomial na\"{i}ve Bayes
+\item Multi-class logistic regression (one vs. rest)
+\item Convolutional neural network
+\end{enumerate}
+
+For the naive Bayes and logistic regression models, I tested multiple parameter values on the dev data, and chose the parameter values that resulted in the highest accuracy. Figures~\ref{fig:mnb-acc} and~\ref{fig:lr-acc} show how the models performed with different parameter values.
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.55]{mnb_accuracy}
+\caption{MNB Accuracy on Dev Data}
+\label{fig:mnb-acc}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.55]{lr_accuracy}
+\caption{LR Accuracy on Dev Data}
+\label{fig:lr-acc}
+\end{figure}
 
 \cite{Glavas:17} -- 
 \citep{Glavas:17} -- 
@@ -204,23 +227,25 @@ Note: \cite{Wermter:02} uses only top 8 topics.
 	\hline
 	\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c|}{\textbf{Model Type}} & \multicolumn{1}{c|}{\textbf{Best}} \\
 	\cline{2-4}
-	& \textbf{LR} & \textbf{MNB} & \textbf{NN} & \multicolumn{1}{c|}{\textbf{Model}} \\
+	& \textbf{MNB} & \textbf{LR} & \textbf{NN} & \multicolumn{1}{c|}{\textbf{Model}} \\
 	\hline
-	Full Text & 0. & 0. & 0. & \\
-	Lead Paragraph & 0. & 0. & 0. & \\
-	Headlines & 0. & 0. & 0. & \\
-	Nouns & 0. & 0. & 0. & \\
-	Lemmas & 0. & 0. & 0. & \\
+	Full Text			& \textbf{0.693}	& 0.742		& 0.		& LR \\
+	Lead Paragraph	& 0.624		& 0.661		& 0.		& LR \\
+	Headlines			& 0.502		& 0.545		& 0.		& LR \\
+	Nouns			& 0.664		& 0.702		& 0.		& LR \\
+	Lemmas			& 0.685		& \textbf{0.743}	& 0.		& LR \\
 	\hline
-	\textbf{Best Input} & & & & \textbf{-} \\
+	\textbf{Best Input} & Full Text & Lemmas & ? & \textbf{Lemmas in LR} \\
 	\hline
 \end{tabular}
-\caption{Model Accuracies}
+\caption{Model Accuracies on Test Data}
 \label{tbl:acc}
 \end{table}
 
 \section{Conclusion}
 \label{sec:conc}
+
+No time for: SVM, gradient boosted trees
 
 An interesting future project would be to run an unsupervised topic classification algorithm on this corpus (e.g. \citeauthor{Martin:15}~\shortcite{Martin:15} use the Latent Dirichlet Allocation algorithm) and compare those results to the supervised learning results.
 

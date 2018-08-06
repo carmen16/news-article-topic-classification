@@ -39,8 +39,8 @@ class MultNB:
 		x = x.reset_index()[['input','alpha','accuracy']]
 		self.combined_accuracy_ = x
 
-		print('Best Multinomial Naïve Bayes model:')
-		print(x.iloc[np.where(x.accuracy == max(x.accuracy))[0][0]])
+		#print('Best Multinomial Naïve Bayes model:')
+		#print(x.iloc[np.where(x.accuracy == max(x.accuracy))[0][0]])
 
 		# Plot multinomial NB accuracies
 		self.colors = colors
@@ -49,7 +49,7 @@ class MultNB:
 		for i in range(len(models)):
 			plt.plot(log_alpha, models[i].accuracy, color=self.colors[i], marker='o', label=models[i].input[0])
 
-		plt.title('Multinomial Naïve Bayes on TFIDF Vectorizer')
+		#plt.title('Multinomial Naïve Bayes on TFIDF Vectorizer')
 		plt.xlabel('Log2(Alpha)')
 		plt.ylabel('Accuracy on Dev Data')
 		plt.ylim(0, 1)
@@ -94,8 +94,8 @@ class LogReg:
 		x = x.reset_index()[['input','penalty','C','accuracy']]
 		self.combined_accuracy_ = x
 
-		print('Best Logistic Regression model:')
-		print(x.iloc[np.where(x.accuracy == max(x.accuracy))[0][0]])
+		#print('Best Logistic Regression model:')
+		#print(x.iloc[np.where(x.accuracy == max(x.accuracy))[0][0]])
 
 		# Plot logistic regression accuracies
 		self.colors = colors
@@ -107,7 +107,7 @@ class LogReg:
 			plt.plot(log_C, models[i].accuracy[np.where(models[i].penalty == 'L2')[0]],
 				color=self.colors[i], marker='o', label=models[i].input[0]+'-L2')
 
-		plt.title('Logistic Regression on TFIDF Vectorizer')
+		#plt.title('Logistic Regression on TFIDF Vectorizer')
 		plt.xlabel('Log10(C)')
 		plt.ylabel('Accuracy on Dev Data')
 		plt.ylim(0, 1)

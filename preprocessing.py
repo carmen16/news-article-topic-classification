@@ -70,8 +70,8 @@ def create_nouns_lemmas(data):
 
 	for i in range(len(data)):
 		if pd.isnull(data[i]):
-			noun_list = np.nan
-			lemma_list = np.nan
+			noun_string = np.nan
+			lemma_string = np.nan
 		else:
 			tagged_tokens = pos_tag(data[i].split())
 			
