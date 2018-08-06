@@ -1,3 +1,6 @@
 # Ignore all XML data files - too many to load into Git
-ldc/
-# data/nyt_corpus.csv
+data/ldc/*
+
+# Ignore parsed CSV files where size is too big to upload
+data/nyt_corpus_50000.csv
+data/nyt_corpus_100000.csv
