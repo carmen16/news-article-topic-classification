@@ -14,7 +14,7 @@
 \newcommand{\tabitem}{~~\llap{\textbullet}~~}
 \newcommand\BibTeX{B{\sc ib}\TeX}
 
-\title{Final Project Report - BETTER TITLE NEEDED}
+\title{Optimal Model Input for Newspaper Topic Classification}
 
 \author{Carmen Easterwood \\
   W266 Natural Language Processing with Deep Learning \\
@@ -49,7 +49,6 @@ There is a large literature looking at various aspects of document classificatio
 Meanwhile, Wermter and Hung (2002) created a semi-supervised self-organizing memory (SOM) model for topic generation of Reuters news articles. They used WordNet relationships to assist their model and thus limited their model input to only the nouns and verbs found in WordNet. This allowed them to achieve accuracies over 95\%, but generalizability may be limited due to this use of WordNet.
 
 Other recent papers have looked at supervised topic classification for non-news documents. Karan et al (2016) looks at classification of Croatian political texts) using word2vec, logistic regression, Gaussian NB, and gradient-boosted trees, as well as a couple of postprocessing rules, to reach an F1 score of 77\% for major topics. Glava¨ et al (2017) looks at SVM and CNN models for multiple languages, and for monolingual English models finds that CNNs perform best with an accuracy of 57\%. In this paper, I will test whether some of the ideas and techniques used for classification of non-news documents can be successfully extended to the news article setting.
-
 
 \section{Methods}
 \label{sec:methods}
@@ -86,7 +85,7 @@ Based on my review of the literature, I tested five different model inputs, some
 		Lead Paragraph	& 740,321		& 15		& 103	& 40,309	& 46		& 61 \\
 		Headlines			& 57,752		& 1		& 8		& 11,150	& 13		& 6 \\
 		Nouns			& 1,349,489	& 27		& 184	& 64,998	& 74		& 112 \\
-		Lemmatized		& 5,032,755	& 100	& 684	& 75,648	& 86		& 245 \\
+		Lemmas			& 5,032,755	& 100	& 684	& 75,648	& 86		& 245 \\
 		\hline
 	\end{tabular}
 	%}

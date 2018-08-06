@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  5 AUG 2018 15:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  5 AUG 2018 23:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -216,43 +216,42 @@ Underfull \hbox (badness 1917) in paragraph at lines 51--52
  []
 
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 57.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 56.
 [1{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 
 ]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 79.
+(Font)              <9> on input line 78.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 79.
+(Font)              <5> on input line 78.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 81.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 80.
 
-Overfull \hbox (196.07568pt too wide) in paragraph at lines 79--93
+Overfull \hbox (196.07568pt too wide) in paragraph at lines 78--92
  [][] 
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 100.
-
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 99.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 115.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 114.
 
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 115.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 114.
 
-Overfull \hbox (273.47333pt too wide) in paragraph at lines 111--128
+Overfull \hbox (273.47333pt too wide) in paragraph at lines 110--127
  [][] 
  []
 
 
-Overfull \hbox (59.00217pt too wide) in paragraph at lines 137--157
+Overfull \hbox (59.00217pt too wide) in paragraph at lines 136--156
  [][] 
  []
 
@@ -261,10 +260,10 @@ File: ../../plots/top_n_labels_histogram.png Graphic file (type png)
 
 <use ../../plots/top_n_labels_histogram.png>
 Package pdftex.def Info: ../../plots/top_n_labels_histogram.png used on input l
-ine 165.
+ine 164.
 (pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
 
-Overfull \hbox (19.40561pt too wide) in paragraph at lines 165--166
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 164--165
  [][] 
  []
 
@@ -272,10 +271,10 @@ Overfull \hbox (19.40561pt too wide) in paragraph at lines 165--166
 File: ../../plots/mnb_accuracy.png Graphic file (type png)
 
 <use ../../plots/mnb_accuracy.png>
-Package pdftex.def Info: ../../plots/mnb_accuracy.png used on input line 187.
+Package pdftex.def Info: ../../plots/mnb_accuracy.png used on input line 186.
 (pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
 
-Overfull \hbox (19.40561pt too wide) in paragraph at lines 187--188
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 186--187
  [][] 
  []
 
@@ -283,20 +282,20 @@ Overfull \hbox (19.40561pt too wide) in paragraph at lines 187--188
 File: ../../plots/lr_accuracy.png Graphic file (type png)
 
 <use ../../plots/lr_accuracy.png>
-Package pdftex.def Info: ../../plots/lr_accuracy.png used on input line 194.
+Package pdftex.def Info: ../../plots/lr_accuracy.png used on input line 193.
 (pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
 
-Overfull \hbox (19.40561pt too wide) in paragraph at lines 194--195
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 193--194
  [][] 
  []
 
 [2 <../../plots/top_n_labels_histogram.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 238--239
+Underfull \hbox (badness 10000) in paragraph at lines 237--238
 []\OT1/ptm/b/n/9 Lemmas
  []
 
 
-Overfull \hbox (8.13pt too wide) in paragraph at lines 226--241
+Overfull \hbox (8.13pt too wide) in paragraph at lines 225--240
  [][] 
  []
 
@@ -308,12 +307,16 @@ Underfull \hbox (badness 2005) in paragraph at lines 38--43
 [3 <../../plots/mnb_accuracy.png> <../../plots/lr_accuracy.png>]) [4
 
 ]
-(./final-report.aux) )
+(./final-report.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
 (\end occurred when \iffalse on line 349 was incomplete) 
 Here is how much of TeX's memory you used:
  2711 strings out of 492995
  37103 string characters out of 6132704
- 119584 words of memory out of 5000000
+ 119596 words of memory out of 5000000
  6205 multiletter control sequences out of 15000+600000
  24734 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -325,7 +328,7 @@ s/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/
 urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utmri8a.pf
 b>
-Output written on final-report.pdf (4 pages, 139993 bytes).
+Output written on final-report.pdf (4 pages, 137317 bytes).
 PDF statistics:
  45 PDF objects out of 1000 (max. 8388607)
  27 compressed objects within 1 object stream
