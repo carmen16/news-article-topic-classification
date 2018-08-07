@@ -1,7 +1,7 @@
 # Optimal Model Input for Newspaper Topic Classification
-### Carmen Easterwood
-### W266 Natural Language Processing with Deep Learning
-### Summer 2018
+#### Carmen Easterwood
+#### W266 Natural Language Processing with Deep Learning
+#### Summer 2018
 
 ## Final Report
 
