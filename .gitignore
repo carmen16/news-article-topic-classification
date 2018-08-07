@@ -6,3 +6,7 @@ data/nyt_corpus_50000.csv
 data/nyt_corpus_100000.csv
 data/nyt_corpus_cleaned_50000.csv
 data/nyt_corpus_cleaned_100000.csv
+
+# GloVe text files too big to upload to Git
+GloVe/glove.6B.*
+
