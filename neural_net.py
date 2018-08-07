@@ -3,25 +3,25 @@ import pandas as pd
 import tensorflow as tf
 from nltk.tokenize.treebank import TreebankWordTokenizer
 
+def load_glove_vectors(embed_dim):
+	# Convert txt file into dict with words as keys and list(float) as values
+	filename = 'GloVe/glove.6B.'+str(embed_dim)+'d.txt'
+	embed_index = {}
+
+	with open(filename) as f:
+		for line in f:
+			line_s = line.split()
+			word = line_s[0]
+			vector = np.asarray(line_s[1:], dtype='float32')
+			embed_index[word] = vector
+
+	return embed_index
+
+
 class NeuralNets:
 
 	def __init__(self):
 		pass
-
-	def load_glove_vectors(self, embed_dim=100):
-		self.embed_dim = embed_dim
-		# Convert txt file into dict with words as keys and list(float) as values
-		filename = 'GloVe/glove.6B.'+str(self.embed_dim)+'d.txt'
-		self.embed_index = {}
-
-		with open(filename) as f:
-			for line in f:
-				line_s = line.split()
-				word = line_s[0]
-				vector = np.asarray(line_s[1:], dtype='float32')
-				self.embed_index[word] = vector
-
-		print('Loaded GloVe matrix of {:,}-dimensional embeddings for {:,} words.'.format(self.embed_dim, len(self.embed_index)))
 
 
 	def tokenize(self, sv_obj):
@@ -42,14 +42,6 @@ class NeuralNets:
 		sv_obj.id_index = {}
 		for key, val in sv_obj.word_index.items():
 			sv_obj.id_index[val] = key
-
-		# Create matrix of GloVe weights
-		sv_obj.embed_matrix = np.zeros((len(sv_obj.word_index) + 1, self.embed_dim))
-		for word, i in sv_obj.word_index.items():
-			embed_vector = self.embed_index.get(word)
-			if embed_vector is not None:
-				# Words not found in embedding index will be all zeros.
-				sv_obj.embed_matrix[i] = embed_vector
 
 
 	def pad(self, sv_obj):
@@ -78,43 +70,71 @@ class NeuralNets:
 		print('\tTraining data shape: {}'.format(sv_obj.train_ids.shape))
 
 
-	def neural_net(self, sv_obj, epochs=5):
+	def create_glove_matrix(self, sv_obj, embed_dim=100):
+		self.embed_dim = embed_dim
+
+		embed_index = load_glove_vectors(embed_dim)
+
+		# Create matrix of GloVe weights
+		sv_obj.embed_matrix = np.zeros((len(sv_obj.word_index) + 1, self.embed_dim))
+		for word, i in sv_obj.word_index.items():
+			embed_vector = embed_index.get(word)
+			if embed_vector is not None:
+				# Words not found in embedding index will be all zeros.
+				sv_obj.embed_matrix[i] = embed_vector
+
+		print('\tCreated GloVe matrix of {:,}-dimensional embeddings'.format(embed_dim))
+
+
+	def cnn(self, sv_obj, num_layers=3, filters=[4, 16, 32], kernel_size=[20, 5, 2], epochs=5):
 		train_data = sv_obj.train_ids
 		train_labels = pd.factorize(sv_obj.train_labels)[0]
 		test_data = sv_obj.test_ids
 		test_labels = pd.factorize(sv_obj.test_labels)[0]
 		n_classes = sv_obj.n_classes
 
+		model = tf.keras.Sequential()
+
+		# Add embedding layer
 		embedding_layer = tf.keras.layers.Embedding(len(sv_obj.word_index) + 1, self.embed_dim,
 			weights=[sv_obj.embed_matrix],
 			input_length=sv_obj.maxlen)#,
 			#trainable=False)
+		model.add(embedding_layer)
 
-		model = tf.keras.Sequential([
-			embedding_layer,
-			tf.keras.layers.GlobalAveragePooling1D(),
-			tf.keras.layers.Dense(self.embed_dim, activation=tf.nn.relu),
-			tf.keras.layers.Dense(n_classes, activation=tf.nn.softmax)
-		])
+		# Add convolution layers
+		for i in range(num_layers):
+			model.add(tf.keras.layers.Conv1D(filters=filters[i],
+				kernel_size=kernel_size[i],
+				activation=tf.nn.relu))
+			#print('Conv1D input:', model.input_shape)
+			#print('Conv1D output:', model.output_shape)
 
+		# Add pooling layer
+		pooling_layer = tf.keras.layers.GlobalAveragePooling1D()
+		model.add(pooling_layer)
+		#print('Pooling:', model.output_shape)
+
+		# Add fully connected layers
+		model.add(tf.keras.layers.Dense(self.embed_dim, activation=tf.nn.relu))
+		#print('ReLU:', model.output_shape)
+		model.add(tf.keras.layers.Dense(n_classes, activation=tf.nn.softmax))
+		#print('Softmax:', model.output_shape)
+
+		# Compile and fit model
+		print('\n'+sv_obj.name_.upper()+':\n')
 		model.compile(optimizer=tf.train.AdamOptimizer(),
 			loss='sparse_categorical_crossentropy',
 			metrics=['accuracy'])
-		print('Compiled')
 
 		model.fit(train_data, train_labels, epochs=epochs)
-		print('Fit')
 		sv_obj.nn_model_ = model
 
 		test_loss, test_acc = model.evaluate(test_data, test_labels)
-		print('Test loss:', test_loss)
 		print('Test accuracy:', test_acc)
 		sv_obj.nn_accuracy_ = test_acc
 
-		pred = model.predict(test_data)
-		print('First prediction (probabilities):', pred[0])
-		print('First prediction (category):', np.argmax(pred[0]))
-		print('First test label:', test_labels[0])
+		#pred = model.predict(test_data)
 
 		print(model.summary())
 

@@ -30,4 +30,4 @@ Below is a quick summary of each python file. See the Jupyter notebook [Code_Wal
     + My code refers to the file path `data/ldc/*`, so the data needs to be placed there for `parse_corpus.py` (step 1) to work.
 + I have uploaded some CSV files with random samples of the data ([data/nyt_corpus_1000.csv](https://github.com/carmen16/w266-final-project/blob/master/data/nyt_corpus_1000.csv) and [data/nyt_corpus_10000.csv](https://github.com/carmen16/w266-final-project/blob/master/data/nyt_corpus_10000.csv)). See Step 1 in [Code Summary](#code-summary) for more info.
 + The GloVe embedding files are also too big to upload to Git. Download them [here](https://nlp.stanford.edu/projects/glove/) (the Wikipedia 2014 + Gigaword 5 version with 6B tokens, 400K vocab).
-    + To run the `neural_nets.py` code, place the four text files in [GloVe/](https://github.com/carmen16/w266-final-project/tree/master/GloVe)
+    + To run `neural_net.py` (step 5), place the four text files in [GloVe/](https://github.com/carmen16/w266-final-project/tree/master/GloVe)
