@@ -21,7 +21,7 @@ Below is a quick summary of each python file. See the Jupyter notebook [Code_Wal
     + The code is set up this way so that each model input can have its own object that accumulates different models and statistics
 4. [base_models.py](https://github.com/carmen16/w266-final-project/blob/master/base_models.py): Takes a `SplitVectorize` object from step 3 and runs it through a Multinomial NB or Logistic Regression model, testing different values of the parameters (`alpha`, `C`, `penalty`) and creating a table of model accuracies for different parameter values. Also allows the user to graph the accuracy of the model with different parameter values and different model inputs.
     + Plots are saved to the [plots/](https://github.com/carmen16/w266-final-project/tree/master/plots) folder
-5. [neural_net.py](https://github.com/carmen16/w266-final-project/blob/master/neural_net.py): Loads GloVe word embeddings from [GloVe/](https://github.com/carmen16/w266-final-project/tree/master/GloVe) to initialize the embedding matrix for the neural net. Then takes a `SplitVectorize` object from step 3, tokenizes the model input, pads the tokens, and runs the padded tokens through a Convolutional Neural Network model.
+5. [neural_net.py](https://github.com/carmen16/w266-final-project/blob/master/neural_net.py): Loads GloVe word embeddings to initialize the embedding matrix for the neural net. Then takes a `SplitVectorize` object from step 3, tokenizes the model input, pads the tokens, and runs the padded tokens through a Convolutional Neural Network model.
 
 ## Where is the Data?
 
@@ -29,3 +29,5 @@ Below is a quick summary of each python file. See the Jupyter notebook [Code_Wal
     + You can download the data at: the [Linguistic Data Consortium](https://catalog.ldc.upenn.edu/ldc2008t19) or from the UC Berkeley library
     + My code refers to the file path `data/ldc/*`, so the data needs to be placed there for `parse_corpus.py` (step 1) to work.
 + I have uploaded some CSV files with random samples of the data ([data/nyt_corpus_1000.csv](https://github.com/carmen16/w266-final-project/blob/master/data/nyt_corpus_1000.csv) and [data/nyt_corpus_10000.csv](https://github.com/carmen16/w266-final-project/blob/master/data/nyt_corpus_10000.csv)). See Step 1 in [Code Summary](#code-summary) for more info.
++ The GloVe embedding files are also too big to upload to Git. Download them [here](https://nlp.stanford.edu/projects/glove/) (the Wikipedia 2014 + Gigaword 5 run with 6B tokens).
+    + To run the `neural_nets.py` code, place the four text files in [GloVe/](https://github.com/carmen16/w266-final-project/tree/master/GloVe)
