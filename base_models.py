@@ -17,6 +17,7 @@ class MultNB:
 			mnb = MultinomialNB(alpha=self.alpha[i])
 			mnb.fit(sv_obj.tv_train, sv_obj.train_labels)
 			accuracy.append(mnb.score(sv_obj.tv_dev, sv_obj.dev_labels))
+			print('\tTested {} alpha=2^{:.2f}'.format(sv_obj.name_, np.log2(self.alpha[i])))
 		
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format
@@ -66,11 +67,12 @@ class LogReg:
 	def test_models(self, sv_obj):
 		# Takes SplitVectorize object and creates accuracy table
 		accuracy = []
-		for i in self.penalties:
-			for j in range(len(self.C)):
-				lr = LogisticRegression(C=self.C[j], penalty=i)
+		for p in self.penalties:
+			for c in self.C:
+				lr = LogisticRegression(C=c, penalty=p)
 				lr.fit(sv_obj.tv_train, sv_obj.train_labels)
 				accuracy.append(lr.score(sv_obj.tv_dev, sv_obj.dev_labels))
+				print('\tTested {} penalty={} C=10^{:.0f}'.format(sv_obj.name_, p, np.log10(c)))
 	
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format
