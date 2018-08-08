@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  6 AUG 2018 23:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 AUG 2018 18:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -229,7 +229,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 80.
 
-Overfull \hbox (196.07568pt too wide) in paragraph at lines 78--92
+Overfull \hbox (184.07849pt too wide) in paragraph at lines 78--92
  [][] 
  []
 
@@ -251,7 +251,7 @@ Overfull \hbox (273.47333pt too wide) in paragraph at lines 110--127
  []
 
 
-Overfull \hbox (59.00217pt too wide) in paragraph at lines 136--156
+Overfull \hbox (59.00217pt too wide) in paragraph at lines 136--166
  [][] 
  []
 
@@ -260,10 +260,10 @@ File: ../../plots/top_n_labels_histogram.png Graphic file (type png)
 
 <use ../../plots/top_n_labels_histogram.png>
 Package pdftex.def Info: ../../plots/top_n_labels_histogram.png used on input l
-ine 164.
+ine 174.
 (pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
 
-Overfull \hbox (19.40561pt too wide) in paragraph at lines 164--165
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 174--175
  [][] 
  []
 
@@ -271,48 +271,42 @@ Overfull \hbox (19.40561pt too wide) in paragraph at lines 164--165
 File: ../../plots/mnb_accuracy.png Graphic file (type png)
 
 <use ../../plots/mnb_accuracy.png>
-Package pdftex.def Info: ../../plots/mnb_accuracy.png used on input line 186.
+Package pdftex.def Info: ../../plots/mnb_accuracy.png used on input line 196.
 (pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
 
-Overfull \hbox (19.40561pt too wide) in paragraph at lines 186--187
- [][] 
- []
-
-<../../plots/lr_accuracy.png, id=11, 433.62pt x 289.08pt>
-File: ../../plots/lr_accuracy.png Graphic file (type png)
-
-<use ../../plots/lr_accuracy.png>
-Package pdftex.def Info: ../../plots/lr_accuracy.png used on input line 193.
-(pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
-
-Overfull \hbox (19.40561pt too wide) in paragraph at lines 193--194
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 196--197
  [][] 
  []
 
 [2 <../../plots/top_n_labels_histogram.png>]
-Overfull \hbox (27.62376pt too wide) in paragraph at lines 225--240
+<../../plots/lr_accuracy.png, id=17, 433.62pt x 289.08pt>
+File: ../../plots/lr_accuracy.png Graphic file (type png)
+
+<use ../../plots/lr_accuracy.png>
+Package pdftex.def Info: ../../plots/lr_accuracy.png used on input line 203.
+(pdftex.def)             Requested size: 238.49173pt x 158.99448pt.
+
+Overfull \hbox (19.40561pt too wide) in paragraph at lines 203--204
  [][] 
  []
 
 
-Overfull \hbox (57.02588pt too wide) in paragraph at lines 247--256
+Overfull \hbox (32.72691pt too wide) in paragraph at lines 235--250
  [][] 
  []
 
-(./final-report.bbl [3 <../../plots/mnb_accuracy.png> <../../plots/lr_accuracy.
-png>]
+(./final-report.bbl
 Underfull \hbox (badness 2005) in paragraph at lines 38--43
 []\OT1/ptm/m/n/10 Jeffrey Pen-ning-ton, Richard Socher, and Christo-
  []
 
-) [4
-
-] (./final-report.aux) )
+) [3 <../../plots/mnb_accuracy.png> <../../plots/lr_accuracy.png>]
+(./final-report.aux) )
 (\end occurred when \iffalse on line 349 was incomplete) 
 Here is how much of TeX's memory you used:
  2712 strings out of 492995
  37112 string characters out of 6132704
- 119604 words of memory out of 5000000
+ 120604 words of memory out of 5000000
  6206 multiletter control sequences out of 15000+600000
  24734 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -324,10 +318,10 @@ s/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/
 urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utmri8a.pf
 b>
-Output written on final-report.pdf (4 pages, 137689 bytes).
+Output written on final-report.pdf (3 pages, 137775 bytes).
 PDF statistics:
- 45 PDF objects out of 1000 (max. 8388607)
- 27 compressed objects within 1 object stream
+ 42 PDF objects out of 1000 (max. 8388607)
+ 25 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  16 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -18,11 +18,11 @@
 		\cline{2-7}
 		& \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} & \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} \\
 		\hline
-		Full Text			& 5,032,755	& 100	& 684	& 87,541	& 100	& 264 \\
-		Lead Paragraph	& 740,321		& 15		& 103	& 40,309	& 46		& 61 \\
-		Headlines			& 57,752		& 1		& 8		& 11,150	& 13		& 6 \\
-		Nouns			& 1,349,489	& 27		& 184	& 64,998	& 74		& 112 \\
-		Lemmas			& 5,032,755	& 100	& 684	& 75,648	& 86		& 245 \\
+		Full Text			& 49.7M	& 100	& 672	& 87,541	& 100	& 260 \\
+		Lead Paragraph	& 7.5M	& 15		& 104	& 40,309	& 48		& 61 \\
+		Headlines			& 0.6M	& 1		& 8		& 11,150	& 15		& 6 \\
+		Nouns			& 13.3M	& 27		& 180	& 64,998	& 80		& 110 \\
+		Lemmas			& 49.7M	& 100	& 672	& 75,648	& 94		& 241 \\
 		\hline
 	\end{tabular}
 	}
@@ -62,20 +62,30 @@
 	\hline
 	\textbf{Cleaned Label Name} & \textbf{Original Label Name} & \textbf{Articles} \\
 	\hline
-	book review & Book Review Desk & 176 \\
+	\multirow{2}{*}{book review} & Book Review Desk & 1,750 \\
+	& Book Review Dest & 1 \\
 	\hline
-	\multirow{9}{*}{business \& financial} & Business World Magazine & 1 \\
-	& Business/Finance Desk & 1 \\
-	& Business/Financial Desk & 628 \\
-	& Business\textbackslash Financial Desk & 1 \\
-	& E-Commerce & 1 \\
-	& Financial Desk & 1,106 \\
-	& Financial Desk; & 2 \\
-	& Money and Business/Financial Desk & 79 \\
-	& SundayBusiness & 14 \\
+	\multirow{18}{*}{business \& financial} & Business Desk & 4 \\
+	& Business World Magazine & 8 \\
+	& Business/Financial Desk & 6,078 \\
+	& Business/Financial Desk; & 1 \\
+	& Business/Financial desk & 1 \\
+	& Business/FinancialDesk & 5 \\
+	& Business\textbackslash Financial Desk & 2 \\
+	& E-Business & 6 \\
+	& E-Commerce & 17 \\
+	& Financial Desk & 11,276 \\
+	& Financial Desk; & 16 \\
+	& Money \& Business/Financial Desk & 3 \\
+	& Money and Busines/Financial Desk & 1 \\
+	& Money and Business/Financial Desk & 939 \\
+	& Moneyand Business/Financial Desk & 1 \\
+	& Small Business & 12 \\
+	& SundayBusiness & 82 \\
+	& The Business of Green & 3 \\
 	\hline
-	\multirow{2}{*}{cars} & Automobiles & 9 \\
-	& Cars & 4 \\
+	\multirow{2}{*}{cars} & Automobiles & 122 \\
+	& Cars & 28 \\
 	\hline
 \end{tabular}
 \caption{Label Cleaning Examples}
@@ -89,19 +99,35 @@
 	\hline
 	\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c|}{\textbf{Model Type}} & \multicolumn{1}{c|}{\textbf{Best}} \\
 	\cline{2-4}
-	& \textbf{MNB} & \textbf{LR} & \textbf{NN} & \multicolumn{1}{c|}{\textbf{Model}} \\
+	& \textbf{MNB} & \textbf{LR} & \textbf{CNN} & \multicolumn{1}{c|}{\textbf{Model}} \\
 	\hline
-	Full Text			& \textbf{0.693}	& 0.742		& 0.		& LR \\
-	Lead Paragraph	& 0.624		& 0.661		& 0.		& LR \\
-	Headlines			& 0.502		& 0.545		& 0.		& LR \\
-	Nouns			& 0.664		& 0.702		& 0.		& LR \\
-	Lemmas			& 0.685		& \textbf{0.743}	& 0.		& LR \\
+	Full Text			& \textbf{0.729}	& \textbf{0.815}	& 0.190		& LR \\
+	Lead Paragraph	& 0.682		& 0.731		& \textbf{0.248}	& LR \\
+	Headlines			& 0.622		& 0.647		& 0.173		& LR \\
+	Nouns			& 0.713		& 0.786		& 0.185		& LR \\
+	Lemmas			& 0.727		& 0.811		& 0.189		& LR \\
 	\hline
-	\textbf{Best Input} & Full Text & Lemmas & ? & \textbf{Lemmas in LR} \\
+	\textbf{Best Input} & Full Text & Full Text & Lead Para & \textbf{Full Text in LR} \\
 	\hline
 \end{tabular}
 \caption{Model Accuracies on Test Data}
 \label{tbl:acc}
+\end{table}
+
+\begin{table}
+\centering
+\small
+\begin{tabular}{lrrr}
+	\textbf{Model Input} & \textbf{Vocab Size} & \textbf{Padding Size} \\
+	\hline
+	Full Text			& 207,070	& 500 \\
+	Lead Paragraph	& 99,210	& 139 \\
+	Headlines			& 30,658	& 11 \\
+	Nouns			& 165,531	& 378 \\
+	Lemmas			& 193,694	& 500 \\
+\end{tabular}
+\caption{CNN Vocabulary and Padding Sizes}
+\label{tbl:cnn}
 \end{table}
 
 \end{document}
