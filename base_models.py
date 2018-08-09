@@ -1,23 +1,29 @@
 
 import numpy as np
 import pandas as pd
+import time
 import matplotlib.pyplot as plt
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
 
 class MultNB:
 
-	def __init__(self, alpha=list(2. ** np.arange(-12, 3, 0.5))):
+	def __init__(self, alpha=list(2. ** np.arange(-11, 3, 0.5))):
 		self.alpha = alpha
 
 	def test_models(self, sv_obj):
 		# Takes SplitVectorize object and creates accuracy table
 		accuracy = []
+		start = time.time()
 		for i in range(len(self.alpha)):
 			mnb = MultinomialNB(alpha=self.alpha[i])
 			mnb.fit(sv_obj.tv_train, sv_obj.train_labels)
 			accuracy.append(mnb.score(sv_obj.tv_dev, sv_obj.dev_labels))
-			print('\tTested {} alpha=2^{:.2f}'.format(sv_obj.name_, np.log2(self.alpha[i])))
+
+			elapsed = time.time() - start
+			hours, rem = divmod(elapsed, 3600)
+			minutes, seconds = divmod(rem, 60)
+			print('\t{}: tested alpha=2^{:.1f} {:0>2}:{:0>2}:{:0>2}'.format(sv_obj.name_, np.log2(self.alpha[i]), int(hours), int(minutes), int(seconds)))
 		
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format
@@ -32,6 +38,7 @@ class MultNB:
 		sv_obj.best_mnb_model_ = MultinomialNB(alpha=best_alpha)
 		sv_obj.best_mnb_model_.fit(sv_obj.tv_train, sv_obj.train_labels)
 
+
 	def plot_accuracy(self, models, colors=['blue', 'red', 'green', 'orange', 'pink']):
 		# Combine accuracy tables into one to find the most accurate model
 		x = models[0]
@@ -39,9 +46,6 @@ class MultNB:
 			x = pd.concat([x, models[i+1]], axis=0)
 		x = x.reset_index()[['input','alpha','accuracy']]
 		self.combined_accuracy_ = x
-
-		#print('Best Multinomial Naïve Bayes model:')
-		#print(x.iloc[np.where(x.accuracy == max(x.accuracy))[0][0]])
 
 		# Plot multinomial NB accuracies
 		self.colors = colors
@@ -60,19 +64,24 @@ class MultNB:
 
 class LogReg:
 
-	def __init__(self, C=list(10. ** np.arange(-7, 7)), penalties=['l1', 'l2']):
+	def __init__(self, C=list(10. ** np.arange(-6, 7)), penalties=['l1', 'l2']):
 		self.C = C
 		self.penalties = penalties
 
 	def test_models(self, sv_obj):
 		# Takes SplitVectorize object and creates accuracy table
 		accuracy = []
+		start = time.time()
 		for p in self.penalties:
 			for c in self.C:
 				lr = LogisticRegression(C=c, penalty=p)
 				lr.fit(sv_obj.tv_train, sv_obj.train_labels)
 				accuracy.append(lr.score(sv_obj.tv_dev, sv_obj.dev_labels))
-				print('\tTested {} penalty={} C=10^{:.0f}'.format(sv_obj.name_, p, np.log10(c)))
+
+				elapsed = time.time() - start
+				hours, rem = divmod(elapsed, 3600)
+				minutes, seconds = divmod(rem, 60)
+				print('\t{}: tested penalty={} C=10^{:.0f} {:0>2}:{:0>2}:{:0>2}'.format(sv_obj.name_, p, np.log10(c), int(hours), int(minutes), int(seconds)))
 	
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format
@@ -95,9 +104,6 @@ class LogReg:
 			x = pd.concat([x, models[i+1]], axis=0)
 		x = x.reset_index()[['input','penalty','C','accuracy']]
 		self.combined_accuracy_ = x
-
-		#print('Best Logistic Regression model:')
-		#print(x.iloc[np.where(x.accuracy == max(x.accuracy))[0][0]])
 
 		# Plot logistic regression accuracies
 		self.colors = colors

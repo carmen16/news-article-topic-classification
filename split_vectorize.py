@@ -1,6 +1,7 @@
 
 import numpy as np
 import pandas as pd
+import time
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -57,20 +58,40 @@ class SplitVectorize:
 		self.dev_data, self.dev_labels = dev[self.articles], dev[self.labels]
 		self.test_data, self.test_labels = test[self.articles], test[self.labels]
 
+
+	def vocab_stats(self):
 		# Count number of training words
 		num_words = 0
-		for i in range(len(self.train_data)):
-			num_words += len(self.train_data[i].split())
+		unq_words = 0
+		vocab = set()
+
+		start = time.time()
+
+		for i in range(self.train_data.shape[0]):
+			tokens = self.train_data[i].split()
+			token_set = set(tokens)
+
+			num_words += len(tokens)
+			unq_words += len(token_set)
+			vocab = vocab.union(token_set)
+
+			if (i+1) % 1000 == 0:
+				elapsed = time.time() - start
+				hours, rem = divmod(elapsed, 3600)
+				minutes, seconds = divmod(rem, 60)
+				print('{}: Scanned {:,} articles {:0>2}:{:0>2}:{:0>2}'.format(self.name_, i+1, int(hours), int(minutes), int(seconds)))
+
 		self.train_words_ = num_words
 		self.train_avg_words_ = num_words / self.train_data.shape[0]
+		self.train_vocab_size_ = len(vocab)
+		self.train_avg_unq_words_ = unq_words / self.train_data.shape[0]
 
-	def tfidf_vectorize(self):
+
+	def tfidf_vectorize(self, min_df=2):
 		# Fit TFIDF on training data and apply transformation to all 3 data pieces
-		tv = TfidfVectorizer()
+		tv = TfidfVectorizer(min_df=min_df)
 		tv.fit(self.train_data)
 		self.tv_train = tv.transform(self.train_data)
 		self.tv_dev = tv.transform(self.dev_data)
 		self.tv_test = tv.transform(self.test_data)
 
-		self.train_vocab_size_ = self.tv_train.shape[1]
-		self.train_avg_unq_words_ = self.tv_train.nnz / self.tv_train.shape[0]
