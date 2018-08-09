@@ -1,46 +1,52 @@
 import pandas as pd
 import numpy as np
 import re
+import csv
 import sys
+import time
 from nltk import pos_tag
 from nltk.corpus import wordnet as wn
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize.treebank import TreebankWordTokenizer
 
-def clean_input_column(c):
-	# Lower case everything
-	c = c.str.lower().str.strip()
 
-	# Separate punctuation from words
-	outer_list = []
+def strip_lower(s):
+	return s.lower().strip()
+
+
+def separate_punctuation(s):
 	punc = '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~'
-	for i in range(len(c)):
-		if pd.isnull(c[i]):
-			outer_list.append(np.nan)
-		else:
-			tokenizer = TreebankWordTokenizer()
-			tokens = tokenizer.tokenize(c[i])
+	for p in punc:
+		s = s.replace(p, ' '+p+' ')
+	return s
 
-			inner_list = []
-			for j in tokens:
-				for k in punc:
-					word_str = '([A-Za-z])'
-					punc_str = '('+str('\\')+k+')'
-					s1 = re.search(word_str+punc_str, j)
-					if s1 is not None:
-						j = re.sub(word_str+punc_str, s1.group(1)+' '+s1.group(2), j)
-					s2 = re.search(punc_str+word_str, j)
-					if s2 is not None:
-						j = re.sub(punc_str+word_str, s2.group(1)+' '+s2.group(2), j)
-				inner_list.extend(j.split())
-			outer_list.append(' '.join(inner_list))
 
-		if (i+1) % 1000 == 0:
-			print('Cleaned '+str(i+1)+' entries in '+c.name)
+def clean_input_column(s):
+	if pd.isnull(s):
+		return np.nan
+	else:
+		s = strip_lower(s)
+		s = separate_punctuation(s)
+		if len(s) > 32700:
+			s = s[:32700]
+		#tokenizer = TreebankWordTokenizer()
+		#tokens = tokenizer.tokenize(s)
 
-	c = pd.DataFrame({c.name: outer_list})
+		#cleaned_list = []
+		#for t in tokens:
+		#	for p in punc:
+		#		word_str = '([A-Za-z])'
+		#		punc_str = '('+str('\\')+p+')'
+		#		s1 = re.search(word_str+punc_str, t)
+		#		if s1 is not None:
+		#			t = re.sub(word_str+punc_str, s1.group(1)+' '+s1.group(2), t)
+		#		s2 = re.search(punc_str+word_str, t)
+		#		if s2 is not None:
+		#			t = re.sub(punc_str+word_str, s2.group(1)+' '+s2.group(2), t)
+		#	cleaned_list.extend(t.split())
+		#s = ' '.join(cleaned_list)
 
-	return c
+	return s
 
 
 def treebank_to_wn_tags(tagged_tokens):
@@ -59,100 +65,106 @@ def treebank_to_wn_tags(tagged_tokens):
 			wn_tags.append((x[0], wn.NOUN)) # catch-all for determinants, prepositions, etc.
 	return wn_tags
 
-	
-def create_nouns_lemmas(data):
-	# Given a list or column of articles, returns a nouns-only version and a
-	# lemmatized version of the articles
+
+def create_nouns_lemmas(s):
+	# Given a string of the full text from an article, returns a nouns-only version
+	# and a lemmatized version of the article
+	tokenizer = TreebankWordTokenizer()
 	lemmatizer = WordNetLemmatizer()
 
-	nouns = []
-	lemmas = []
+	if pd.isnull(s):
+		nouns = np.nan
+		lemmas = np.nan
+	else:
+		# Get rid of punctuation
+		s = strip_lower(s)
+		s = separate_punctuation(s)
 
-	for i in range(len(data)):
-		if pd.isnull(data[i]):
-			noun_string = np.nan
-			lemma_string = np.nan
-		else:
-			tagged_tokens = pos_tag(data[i].split())
-			
-			# For nouns
-			noun_list = [x[0] for x in tagged_tokens if x[1][0] == 'N']
-			noun_string = ' '.join(noun_list)
-			
-			# For lemmas
-			wn_tags = treebank_to_wn_tags(tagged_tokens)
-			lemma_list = [lemmatizer.lemmatize(x[0], pos=x[1]) for x in wn_tags]
-			lemma_string = ' '.join(lemma_list)
+		tokens = tokenizer.tokenize(s)
+		tagged_tokens = pos_tag(tokens)
 		
-		nouns.append(noun_string)
-		lemmas.append(lemma_string)
+		# For nouns
+		noun_list = [x[0] for x in tagged_tokens if x[1][0] == 'N']
+		nouns = ' '.join(noun_list)
+		
+		# For lemmas
+		wn_tags = treebank_to_wn_tags(tagged_tokens)
+		lemma_list = [lemmatizer.lemmatize(x[0], pos=x[1]) for x in wn_tags]
+		lemmas = ' '.join(lemma_list)
 
-		if i > 0 and (i+1) % 1000 == 0:
-			print('Created nouns and lemmas for '+str(i+1)+' articles')
-
-	return pd.DataFrame({'nouns': nouns}), pd.DataFrame({'lemmas': lemmas})
+	return nouns, lemmas
 
 
-def clean_labels(c):
+def clean_label(s):
 	# Regex operations to clean labels and collapse some categories
-	c = c.str.lower().str.strip()
-	c = c.str.replace('desk', '')
-	c = c.str.replace(';', '')
-	c = c.str.replace(' and ', ' & ')
-	c = c.str.replace('\\', '/')
-	c = c.str.replace('arts & .*|cultural.*|museums|the arts/cultural|.*weekend.*', 'arts & leisure')
-	c = c.str.replace('automobiles|automobile|automoblies', 'cars')
-	c = c.str.replace('classifed|classifieds|classsified|classfied', 'classified')
-	c = c.str.replace('workplace|working|retirement', 'job market')
-	c = c.str.replace('book review dest', 'book review')
-	c = c.str.replace('.*dining out.*', 'dining')
-	c = c.str.replace('.*education.*', 'education')
-	c = c.str.replace('business/financ.*|business world magazine|e-commerce|e-business|.*money.*financ.*|financial.*|small business|the business of green|sundaybusiness|^business $', 'business & financial')
-	c = c.str.replace('health&fitness|the good health magazine|women\'s health|men & health', 'health & fitness')
-	c = c.str.replace('circuitscircuits|circuits|flight|wireless living', 'technology')
-	c = c.str.replace('home entertaining magazine|house & home/style|living living|living|home home|home', 'home & garden')
-	c = c.str.replace('metropolitan dsk|metropolitian|qmetropolitan', 'metropolitan')
-	c = c.str.replace('new jersey.*', 'new jersey weekly')
-	c = c.str.replace('thursday styles|styles of the times|style of the times|tholiday', 'style')
-	c = c.str.replace('.*design.*magazine|.*fashion.*magazine|.*style.*magazine|.*travel.*magazine|t: \w+.*', 't magazine')
-	c = c.str.replace('entertaining magazine|new york, new york magazine|the new season magazine|world of new york magazine', 'magazine')
-	c = c.str.replace('adventure sports|sports sports', 'sports')
-	c = c.str.replace('millenium', 'millennium')
-	c = c.str.replace('week in review.*|weekin review.*', 'week in review')
-	c = c.str.replace('the city weekly.*|city weekly|the city.*', 'the city weekly')
-	c = c.str.replace('escapes|vacation', 'travel')
-	c = c.str.replace('.*real estate report', 'real estate')
-	c = c.str.replace('.*supplement.*', 'supplement')
-	c = c.str.strip()
-	return c
-
-def save_data(df, filename):
-	df.to_csv(filename, index = False)
+	s = strip_lower(s)
+	s = s.replace('desk', '')
+	s = s.replace(';', '')
+	s = s.replace(' and ', ' & ')
+	s = s.replace('\\', '/')
+	s = re.sub('arts & .*|cultural.*|museums|the arts/cultural|.*weekend.*', 'arts & leisure', s)
+	s = re.sub('automobiles|automobile|automoblies', 'cars', s)
+	s = re.sub('classifed|classifieds|classsified|classfied', 'classified', s)
+	s = re.sub('workplace|working|retirement', 'job market', s)
+	s = re.sub('book review dest', 'book review', s)
+	s = re.sub('.*dining out.*', 'dining', s)
+	s = re.sub('.*education.*', 'education', s)
+	s = re.sub('business/financ.*|business world magazine|e-commerce|e-business|.*money.*financ.*|financial.*|small business|the business of green|sundaybusiness|^business $', 'business & financial', s)
+	s = re.sub('health&fitness|the good health magazine|women\'s health|men & health', 'health & fitness', s)
+	s = re.sub('circuitscircuits|circuits|flight|wireless living', 'technology', s)
+	s = re.sub('home entertaining magazine|house & home/style|living living|living|home home|home', 'home & garden', s)
+	s = re.sub('metropolitan dsk|metropolitian|qmetropolitan', 'metropolitan', s)
+	s = re.sub('new jersey.*', 'new jersey weekly', s)
+	s = re.sub('thursday styles|styles of the times|style of the times|tholiday', 'style', s)
+	s = re.sub('.*design.*magazine|.*fashion.*magazine|.*style.*magazine|.*travel.*magazine|t: \w+.*', 't magazine', s)
+	s = re.sub('entertaining magazine|new york, new york magazine|the new season magazine|world of new york magazine', 'magazine', s)
+	s = re.sub('adventure sports|sports sports', 'sports', s)
+	s = re.sub('millenium', 'millennium', s)
+	s = re.sub('week in review.*|weekin review.*', 'week in review', s)
+	s = re.sub('the city weekly.*|city weekly|the city.*', 'the city weekly', s)
+	s = re.sub('escapes|vacation', 'travel', s)
+	s = re.sub('.*real estate report', 'real estate', s)
+	s = re.sub('.*supplement.*', 'supplement', s)
+	s = s.strip()
+	return s
 
 
 def process_data(n):
-	df = pd.read_csv('data/nyt_corpus_'+str(n)+'.csv')
-	print('Imported data file')
+	with open('data/nyt_corpus_'+str(n)+'.csv') as f1:
+		with open('data/nyt_corpus_cleaned_'+str(n)+'.csv', 'w') as f2:
+			start = time.time()
+			print('Creating new file')
 
-	full_text = clean_input_column(df.full_text)
-	print('Cleaned full_text')
-	lead_paragraph = clean_input_column(df.lead_paragraph)
-	print('Cleaned lead_paragraph')
-	headline = clean_input_column(df.headline)
-	print('Cleaned headlines')
+			i = 0
+			reader = csv.reader(f1)
+			writer = csv.writer(f2)
 
-	nouns, lemmas = create_nouns_lemmas(full_text.full_text)
-	print('Created nouns and lemmas')
+			for line in reader:
+				# Create cleaned line
+				if i == 0:
+					clean_line = ['desk', 'full_text', 'lead_paragraph', 'headline', 'nouns', 'lemmas', 'length']
+				else:
+					desk = clean_label(line[5])
+					full_text = clean_input_column(line[6])
+					headline = clean_input_column(line[8])
+					lead_paragraph = clean_input_column(line[14])
+					length = line[15]
+					nouns, lemmas = create_nouns_lemmas(full_text)
+					clean_line = [desk, full_text, lead_paragraph, headline, nouns, lemmas, length]
+			
+				# Write it to new file
+				writer.writerow(clean_line)
+				
+				if i != 0 and i % 1000 == 0:
+					elapsed = time.time() - start
+					hours, rem = divmod(elapsed, 3600)
+					minutes, seconds = divmod(rem, 60)
+					print('Wrote {} cleaned records to CSV file {:0>2}:{:0>2}:{:0>2}'.format(str(i), int(hours), int(minutes), int(seconds)))
+				
+				i += 1
 
-	labels = pd.DataFrame(clean_labels(df.desk))
-	print('Cleaned labels')
+	print('Preprocessing complete')
 	
-	df_final = pd.DataFrame(pd.concat([labels,
-		full_text, lead_paragraph, headline, nouns, lemmas], axis=1))
-
-	save_data(df_final, 'data/nyt_corpus_cleaned_'+str(n)+'.csv')
-	print('Saved cleaned data file')
-
 
 if __name__ == '__main__':
 	n = int(sys.argv[1])
