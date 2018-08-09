@@ -1,12 +1,14 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper,table]{article}
 
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
 \usepackage[nohyperref]{acl2018} % references acl2018.sty
-%\usepackage{cite}
+\usepackage{rotating}
 \usepackage{times}
 \usepackage{latexsym}
 \usepackage{multirow}
 \usepackage{graphicx}
-%\usepackage{pdflscape}
+	\graphicspath{ {../../plots/} }
 \usepackage{url}
 
 \aclfinalcopy % Uncomment this line to show the author and remove the line numbers on the sides
@@ -27,8 +29,6 @@
 % End header information
 %%%%%%%%%%%%%%%
 
-\graphicspath{ {../../plots/} }
-
 \begin{document}
 \maketitle
 
@@ -46,16 +46,14 @@ In this paper, I will look at topic classification specifically in the newspaper
 \section{Background}
 \label{sec:back}
 
-There is a large literature looking at various aspects of document classification, but only a few have focused on evaluating newspaper articles. Martin and Johnson (2015) used a dataset from the San Jose Mercury News and found that using a nouns-only or lemmatized version of the articles improved topic classification. However, theirs was an unsupervised model, so they evaluated their model using techniques that are not applicable in a supervised setting.
+As mentioned, there is a large literature looking at topic classification in many contexts, but only a few papers have focused on classifying newspaper articles. Most recently, \citet{Martin:15} found that using a nouns-only or lemmatized version of the articles improved topic classification on a dataset of 90,000 articles from the San Jose Mercury News. However, they were working on an unsupervised model, so they were also relying on the model to generate the topics from the words it received. \citeauthor{Martin:15} evaluated their model using techniques that are not applicable in a supervised setting, so their results are not directly comparable to mine.
 
-Meanwhile, Wermter and Hung (2002) created a semi-supervised self-organizing memory (SOM) model for topic generation of Reuters news articles. They used WordNet relationships to assist their model and thus limited their model input to only the nouns and verbs found in WordNet. This allowed them to achieve accuracies over 95\%, but generalizability may be limited due to this use of WordNet.
+Previously, \citet{Wermter:02} proposed a semi-supervised self-organizing memory (SOM) model for topic classification on 100,000 Reuters news articles. The authors were able to achieve accuracies around 90\% for both full text articles and article headlines, and for the full text articles they were able to bump the accuracy up to ~95\% by using WordNet relationships to assist the model (which limited the model input to only the nouns and verbs found in WordNet). Crucially, however, the authors only tested their model on the eight most common topics in their dataset and did not consider articles from other topics. To be useful outside of an academic setting, a topic classification model needs to be able to handle more different types of articles.
 
-Other recent papers have looked at supervised topic classification for non-news documents. Karan et al (2016) looks at classification of Croatian political texts) using word2vec, logistic regression, Gaussian NB, and gradient-boosted trees, as well as a couple of postprocessing rules, to reach an F1 score of 77\% for major topics. Glava¨ et al (2017) looks at SVM and CNN models for multiple languages, and for monolingual English models finds that CNNs perform best with an accuracy of 57\%. In this paper, I will test whether some of the ideas and techniques used for classification of non-news documents can be successfully extended to the news article setting.
+Other recent papers have looked at supervised topic classification for non-news documents in various settings. \citet{Karan:16} discusses classification of Croatian political texts using logistic regression (one-vs-rest), Gaussian Naive Bayes, and gradient-boosted trees, as well as utilizing some post-processing rules, to reach an F1 score of 77\% on 22 topics. Their model included lemmas and bigrams as inputs. Meanwhile \citet{Glavas:17} looks at similar political texts in multiple languages, and finds that CNNs perform best for monolingual English models with an accuracy of 57\%. In this paper, I will extend some of the techniques used in these cited works to the news article setting.
 
 \section{Methods}
 \label{sec:methods}
-
-This section will discuss the New York Times dataset, the five model outputs, selection and cleaning of the model output variable, and the three classification models.
 
 \subsection{Dataset}
 \label{ssec:dataset}
@@ -68,83 +66,93 @@ For this analysis I used the New York Times Annotated Corpus, which contains 1.8
 I test the article's full text and four additional model inputs. Three are pulled from my review of the literature,  and I have added the fourth based on my understanding of the structure of news articles.
 
 \begin{enumerate}
-\item Full text of article
-\item Article's lead paragraph, which is supposed to hook the reader, and in a news context often summarizes important details of the story \cite{NPR}
-\item Article's headline \cite{Wermter:02}
-\item Nouns-only version of the full text \cite{Martin:15}
-\item Lemmatized version of the full text \cite{Martin:15}
+\item \textbf{Full text} of article
+\item Article's \textbf{lead paragraph}, which is supposed to hook the reader, and in a news context often summarizes important details of the story \cite{NPR}
+\item Article's \textbf{headline} \cite{Wermter:02}
+\item \textbf{Nouns-only} version of the full text \cite{Martin:15}. Created using NLTK's part-of-speech tagger.
+\item \textbf{Lemmatized} version of the full text \cite{Martin:15}. Created using NLTK's lemmatizer.
 \end{enumerate}
-
-Table~\ref{tbl:inputs} shows some key statistics for each type of model input. The full text for the training articles (approximately 75,000 articles) adds up to about 50 million words and a vocabulary of over 300,000 words. The lemmas have roughly the same number of words, but much fewer unique words, with a vocabulary size 72\% of the full text vocabulary. There is a big drop down to the nouns, which have only 27\% of the total words that full text articles have, but 61\% of the vocabulary. As expected, headlines are the smallest category with less than a million words total, and the average individual headline having 8 words.
 
 \begin{table}
 	\centering
 	\small
 	%\makebox[\linewidth]{
 	%\resizebox{\columnwidth}{!}{
-	\begin{tabular}{| l | r r r |}
-		\hline
-		\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c|}{\textbf{Training Words}} \\
-		\cline{2-4}
-		& \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} \\
-		\hline
+	\begin{tabular}{lrrr}
+		\toprule
+		\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c}{\textbf{Training Words}} \\
+		\cmidrule{2-4}
+		& \textbf{Count} & \textbf{\% Full Text} & \textbf{Average} \\
+		\midrule
 		Full Text			& 49.5M	& 100\%	& 668 \\
 		Lead Paragraph	& 7.6M	& 15\%	& 105 \\
 		Headlines			& 0.6M	& 1\%	& 8 \\
 		Nouns			& 13.2M	& 27\%	& 178 \\
 		Lemmas			& 50.4M	& 102\%	& 682 \\
-		\hline
-		\hline
-		\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c|}{\textbf{Training Vocab (Unique Words)}} \\
-		\cline{2-4}
-		& \textbf{Count} & \textbf{\% Full Text} & \textbf{Avg. per Article} \\
-		\hline
-		Full Text			& 327K	& 100	& 276 \\
-		Lead Paragraph	& 140K	& 43		& 67 \\
-		Headlines			& 42K	& 13		& 7 \\
-		Nouns			& 198K	& 61		& 111 \\
-		Lemmas			& 237K	& 72		& 253 \\
-		\hline
+		\bottomrule
+	\end{tabular}
+	\begin{tabular}{lrrr}
+		\toprule
+		\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c}{\textbf{Training Vocab (Unique Words)}} \\
+		\cmidrule{2-4}
+		& \textbf{Count} & \textbf{\% Full Text} & \textbf{Average} \\
+		\midrule
+		Full Text			& 327K	& 100\%	& 276 \\
+		Lead Paragraph	& 140K	& 43\%	& 67 \\
+		Headlines			& 42K	& 13\%	& 7 \\
+		Nouns			& 198K	& 61\%	& 111 \\
+		Lemmas			& 237K	& 72\%	& 253 \\
+		\bottomrule
 	\end{tabular}
 	%}
 	\caption{Model Inputs}
 	\label{tbl:inputs}
 \end{table}
 
+
+Table~\ref{tbl:inputs} shows some key statistics for each type of model input. The full text for the training articles (approximately 75,000 articles) adds up to about 50 million words and a vocabulary of over 300,000 words. The lemmas have roughly the same number of words, but much fewer unique words, with a vocabulary size only 72\% of the full text vocabulary. Then there is a big drop down to the nouns, which have only 27\% of the total words that full text articles have, but 61\% of the vocabulary. As expected, headlines are the smallest category with less than a million words total, and the average individual headline having 8 words.
+
 \subsection{Model Output}
 \label{ssec:output}
 
-The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output} shows three examples from the data of the four different ways the articles were classified. In my models I use the \texttt{desk} column as my model output variable for two reasons:
+The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output} shows four examples from the data of the four different ways the articles were classified. In my models I use the \texttt{desk} column as my model output variable for two reasons:
 
 \begin{enumerate}
 \item It has the lowest percentage of null values (0.4\%)
 \item It never assigns multiple descriptions to the same article
 \end{enumerate}
 
-\begin{table}
+\begin{sidewaystable}
 \centering
 \footnotesize
 %\makebox[\linewidth]{
-\begin{tabular}{| llll |}
-	\hline
-	\textbf{Desk} & \textbf{General Descriptor} & \textbf{Online Sections} & \textbf{Taxonomic Classifier} \\
-	\hline
-	Foreign & \tabitem Immigration \& Refugees & \tabitem World & \tabitem Top/News/World/Europe \\
-	Desk & \tabitem Jews & & \tabitem Top/News/World/Countries and Territories/Austria \\
-	& \tabitem Music & & \tabitem Top/Features/Arts/Music \\
-	& \tabitem Religion \& Churches & & \tabitem Etc. (8 others) \\
-	\hline
-	Book & \tabitem Books \& Literature & \tabitem Arts & \tabitem Top/Feature/Arts \\
-	Review & & \tabitem Books & \tabitem Top/Features/Books \\
-	Desk & & & \tabitem Top/Features/Books/Book Reviews \\
-	\hline
-	Classified & & \tabitem Paid Death Notices & \tabitem Top/Classifieds/Paid Death Notices \\
-	\hline
+%\resizebox{\columnwidth}{!}{
+%\rotatebox{270}{
+\begin{tabular}{cllll}
+	\toprule
+	\textbf{\#} & \textbf{Desk} & \textbf{General Descriptor} & \textbf{Online Sections} & \textbf{Taxonomic Classifier} \\
+	\midrule
+	1 & Foreign & \tabitem Immigration \& Refugees & \tabitem World & \tabitem Top/News/World/Europe \\
+	& Desk & \tabitem Jews & & \tabitem Top/News/World/Countries and Territories/Austria \\
+	& & \tabitem Music & & \tabitem Top/Features/Arts/Music \\
+	& & \tabitem Religion \& Churches & & \tabitem Etc. (8 others) \\
+	\midrule
+	2 & Book & \tabitem Books \& Literature & \tabitem Arts & \tabitem Top/Features/Arts \\
+	& Review & & \tabitem Books & \tabitem Top/Features/Books \\
+	& Desk & & & \tabitem Top/Features/Books/Book Reviews \\
+	\midrule
+	3 & Classified & & \tabitem Paid Death Notices & \tabitem Top/Classifieds/Paid Death Notices \\
+	\midrule
+	4 & Style & \tabitem Computers \& the Internet & \tabitem Technology & \tabitem Top/News/Technology \\
+	& Desk & \tabitem Labor & \tabitem Style & \tabitem Top/Features/Style/Fashion and Style \\
+	& & & \tabitem Opinion & \tabitem Top/Opinion/Opinion \\
+	& & & & \tabitem Etc. (2 others) \\
+	\bottomrule
 \end{tabular}
 %}
 \caption{Possible Model Outputs}
 \label{tbl:output}
-\end{table}
+\end{sidewaystable}
 
 However, \texttt{desk} still requires some clean-up before use due to misspellings and possible changes to the desk names over time. Table~\ref{tbl:label-clean} shows some examples of how I cleaned the \texttt{desk} variable so the model would have a standardized set of output labels for the articles. For example, there are significant clusters of articles around "Business/Financial Desk", "Financial Desk", and "Money and Business/Financial Desk" (plus misspellings of each of these), and these are all converted to have a single label of "business \& financial".
 
@@ -153,12 +161,12 @@ However, \texttt{desk} still requires some clean-up before use due to misspellin
 %\small
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{clr}
-	\hline
+	\toprule
 	\textbf{Clean Label} & \textbf{Original Label} & \textbf{Count} \\
-	\hline
+	\midrule
 	\multirow{2}{*}{book review} & Book Review Desk & 1,750 \\
 	& Book Review Dest & 1 \\
-	\hline
+	\midrule
 	& Business Desk & 4 \\
 	& Business World Magazine & 8 \\
 	& Business/Financial Desk & 6,078 \\
@@ -177,10 +185,10 @@ However, \texttt{desk} still requires some clean-up before use due to misspellin
 	& Small Business & 12 \\
 	& SundayBusiness & 82 \\
 	& The Business of Green & 3 \\
-	\hline
+	\midrule
 	\multirow{2}{*}{cars} & Automobiles & 122 \\
 	& Cars & 28 \\
-	\hline
+	\bottomrule
 \end{tabular}
 }
 \caption{Label Cleaning Examples}
@@ -216,19 +224,6 @@ For the multinomial naive Bayes and logistic regression models, I TF-IDF vectori
 
 In each of these models I tested multiple parameter values on the dev data, and chose the parameter values that resulted in the highest accuracy. Figures~\ref{fig:mnb-acc} and~\ref{fig:lr-acc} show how the models performed with different parameter values, and reveal some interesting comparisons between the five model inputs that I will discuss further in Section~\ref{sec:results}.
 
-\subsubsection{CNN}
-\label{sssec:cnn}
-
-When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. 
-
-\begin{enumerate}
-\item Initialized the model with GloVe word embeddings \cite{GloVe}
-\item Limited the vocabulary to the same size as the TF-IDF vocabulary (see Section~\ref{sssec:mnb-lr})
-\item Padded each model input to the 90th percentile of lengths for that model input
-\end{enumerate}
-
-I chose this padding method because the length distribution for each model input is extremely right-skewed (e.g. the 90th percentile of full texts has 1,225 words, while the longest full text has over 9,000 words). It didn't make sense to pad model inputs out to the length of the longest article, since most articles are nowhere close to that length, and the model would be unnecessarily large. I therefore sacrificed the data at the ends of the longest articles in the hope of having a model I could actually train with the number of articles I am using.
-
 \begin{figure}
 \centering
 \includegraphics[scale=0.55]{mnb_accuracy}
@@ -243,6 +238,39 @@ I chose this padding method because the length distribution for each model input
 \label{fig:lr-acc}
 \end{figure}
 
+\subsubsection{CNN}
+\label{sssec:cnn}
+
+When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. 
+
+\begin{enumerate}
+\item Initialized the model with GloVe word embeddings \cite{GloVe}
+\item Limited the vocabulary to the same size as the TF-IDF vocabulary (see Section~\ref{sssec:mnb-lr})
+\item Padded each model input to the 90th percentile of lengths for that model input
+\end{enumerate}
+
+I chose this padding method because the length distribution for each model input is extremely right-skewed (e.g. the 90th percentile of full texts has 1,225 words, while the longest full text has over 9,000 words). It didn't make sense to pad model inputs out to the length of the longest article, since most articles are nowhere close to that length, and the model would be unnecessarily large. I therefore sacrificed the data at the ends of the longest articles in the hope of having a model I could actually train with the number of articles I am using.
+
+\begin{table}
+\centering
+%\small
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lrrr}
+	\toprule
+	\textbf{Model Input} & \textbf{Vocab Size} & \textbf{Padding Size} \\
+	\midrule
+	Full Text			& 207,070	& 500 \\
+	Lead Paragraph	& 99,210	& 139 \\
+	Headlines			& 30,658	& 11 \\
+	Nouns			& 165,531	& 378 \\
+	Lemmas			& 193,694	& 500 \\
+	\bottomrule
+\end{tabular}
+}
+\caption{CNN Vocabulary and Padding Sizes}
+\label{tbl:cnn}
+\end{table}
+
 \section{Results \& Discussion}
 \label{sec:results}
 
@@ -250,40 +278,27 @@ Note: \cite{Wermter:02} uses only top 8 topics.
 
 \begin{table}
 \centering
-\small
-\begin{tabular}{|l|rrr|p{1.2cm}|}
-	\hline
-	\multirow{2}{*}{\textbf{Model Input}} & \multicolumn{3}{c|}{\textbf{Model Type}} & \multicolumn{1}{c|}{\textbf{Best}} \\
-	\cline{2-4}
-	& \textbf{MNB} & \textbf{LR} & \textbf{CNN} & \multicolumn{1}{c|}{\textbf{Model}} \\
-	\hline
-	Full Text			& \textbf{0.729}	& \textbf{0.815}	& 0.190		& LR \\
-	Lead Paragraph	& 0.682		& 0.731		& \textbf{0.248}	& LR \\
-	Headlines			& 0.622		& 0.647		& 0.173		& LR \\
-	Nouns			& 0.713		& 0.786		& 0.185		& LR \\
-	Lemmas			& 0.727		& 0.811		& 0.189		& LR \\
-	\hline
-	\textbf{Best Input} & Full Text & Full Text & Lead Para & \textbf{Full Text in LR} \\
-	\hline
+%\small
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lrrrc}
+	\toprule
+	& \multicolumn{3}{c}{\textbf{Model Type}} & \\
+	\cmidrule{2-4}
+	\textbf{Model Input} & \textbf{MNB} & \textbf{LR} & \textbf{CNN} & \multicolumn{1}{c}{\textbf{Best Model}} \\
+	\midrule
+	Full Text			& \textbf{0.729}	& \textbf{0.815}	& 0.190		& \cellcolor[gray]{0.92} LR \\
+	Lead Paragraph	& 0.682		& 0.731		& \textbf{0.248}	& \cellcolor[gray]{0.92} LR \\
+	Headlines			& 0.622		& 0.647		& 0.173		& \cellcolor[gray]{0.92} LR \\
+	Nouns			& 0.713		& 0.786		& 0.185		& \cellcolor[gray]{0.92} LR \\
+	Lemmas			& 0.727		& 0.811		& 0.189		& \cellcolor[gray]{0.92} LR \\
+	\midrule
+	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Lead & \cellcolor[gray]{0.75} \textbf{Full Text} \\
+	& \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} Para & \cellcolor[gray]{0.75} \textbf{in LR} \\
+	\bottomrule
 \end{tabular}
+}
 \caption{Model Accuracies on Test Data}
 \label{tbl:acc}
-\end{table}
-
-\begin{table}
-\centering
-\small
-\begin{tabular}{lrrr}
-	\textbf{Model Input} & \textbf{Vocab Size} & \textbf{Padding Size} \\
-	\hline
-	Full Text			& 207,070	& 500 \\
-	Lead Paragraph	& 99,210	& 139 \\
-	Headlines			& 30,658	& 11 \\
-	Nouns			& 165,531	& 378 \\
-	Lemmas			& 193,694	& 500 \\
-\end{tabular}
-\caption{CNN Vocabulary and Padding Sizes}
-\label{tbl:cnn}
 \end{table}
 
 \section{Conclusion}
