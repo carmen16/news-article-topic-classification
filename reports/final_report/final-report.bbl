@@ -1,5 +1,13 @@
-\begin{thebibliography}{6}
+\begin{thebibliography}{7}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[{Barthel(2017)}]{Pew}
+Michael Barthel. 2017.
+\newblock \href
+  {http://www.pewresearch.org/fact-tank/2017/06/01/circulation-and-revenue-fall-for-newspaper-industry/}
+  {Despite subscription surges for largest {U.S.} newspapers, circulation and
+  revenue fall for industry overall}.
+\newblock \emph{PewResearch.org}.
 
 \bibitem[{Bloch(2016)}]{NPR}
 Hannah Bloch. 2016.
