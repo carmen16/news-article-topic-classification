@@ -33,22 +33,22 @@
 \maketitle
 
 \begin{abstract}
-Topic classification is an important method of organizing text content and making it more easily searchable, but in the newspaper setting the question remains: what exactly should we be feeding into topic classification models? In this paper, I test five different model inputs: full text, lead paragraph, headline, nouns-only version of the full text, and lemmatized full text. In general I find that inputs with more words perform better, but that a larger vocabulary isn't necessarily better. While nouns make up only 27\% of the words and 61\% of the vocabulary in a newspaper article, they perform almost as well as the full text, making them possibly the most efficient model input.
+Topic classification is an important method of organizing text content and making it more easily searchable, but in the newspaper setting the question remains: what exactly should be fed into topic classification models? In this paper, I test five different model inputs: full text, lead paragraph, headline, nouns-only version of the full text, and lemmatized full text. In general I find that inputs with more words perform better, and Full Text achieves the highest accuracy at 81.5\% and an F1 score of 80.6\%. However, some words are more important than others, and trimming the vocabulary down to the more important words through part-of-speech filtering or lemmatization still gets good results with fewer overall words.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-Topic classification is an important form of content analysis that has been widely studied in the NLP community. Tagging documents by topic makes searches more efficient, so users can find the information they're looking for more quickly and without having to sort through unrelated documents. Unfortunately, manual topic-coding on a large scale is quite time-consuming, so automating this process can save both time and money for organizations with a large amount of text data.
+Topic classification is an important form of content analysis that has been widely studied in the NLP community. Tagging documents by topic makes searches more efficient, so users can find the information they're looking for more quickly and without having to sort through unrelated documents. Unfortunately, manual topic-coding on a large scale can be quite time-consuming and expensive, so automating this process can save both time and money for organizations with a large amount of text data.
 
-In this paper, I will look at topic classification specifically in the newspaper context. In addition to making searches more efficient for news consumers and researchers, classifying news articles by topic also helps us understand what journalists are writing about, whether that is changing over time, and the relative importance of different topics. Since many news organizations have seen declining revenue over the last decade \cite{Pew}, a cost-saving measure like automation of topic-coding would likely be welcome. However, in the existing literature there is no agreement on what specifically should be fed into topic classification models to get the best results. In this paper, I develop three supervised topic classification models and test several possible model inputs drawn from New York Times articles. For each model, my main focus is how the model inputs perform relative to each other, and which input gives the best result in each setting.
+In this paper, I will look at topic classification specifically in the newspaper context. In addition to making searches more efficient for news consumers and researchers, classifying news articles by topic also helps us understand what journalists are writing about, whether that is changing over time, and the relative importance of different topics. Since many news organizations have seen declining revenue over the last decade \cite{Pew}, a cost-saving measure like automation of topic-coding would likely be welcome. However, in the existing literature there is no agreement on what specifically should be fed into topic classification models to get the best results. In this paper, I develop three supervised topic classification models and test five possible model inputs drawn from New York Times (NYT) articles. For each model, my main focus is how the model inputs perform relative to each other, and which input gives the best result in each setting.
 
 \section{Background}
 \label{sec:back}
 
-As mentioned, there is a large literature looking at topic classification in many contexts, but only a few papers have focused on classifying newspaper articles. Most recently, \citet{Martin:15} found that using a nouns-only or lemmatized version of the articles improved topic classification on a dataset of 90,000 articles from the San Jose Mercury News. However, they were working on an unsupervised model, so they were also relying on the model to generate the topics from the words it received. \citeauthor{Martin:15} evaluated their model using techniques that are not applicable in a supervised setting, so their results are not directly comparable to mine.
+As mentioned, there is a large literature looking at topic classification in many contexts, but only a few papers have focused on classifying newspaper articles. Most recently, \citet{Martin:15} found that using a nouns-only or lemmatized version of the articles improved topic classification on a dataset of 90,000 articles from the San Jose Mercury News. However, these authors were creating an unsupervised model, so they were also relying on the model to generate the topics from the words it received, which is a different task from what I will consider in this paper. \citeauthor{Martin:15} evaluated their model using techniques that are not applicable in a supervised setting, so their results are not directly comparable to mine.
 
-Previously, \citet{Wermter:02} proposed a semi-supervised self-organizing memory (SOM) model for topic classification on 100,000 Reuters news articles. The authors were able to achieve accuracies around 90\% for both full text articles and article headlines, and for the full text articles they were able to bump the accuracy up to ~95\% by using WordNet relationships to assist the model (which limited the model input to only the nouns and verbs found in WordNet). Crucially, however, the authors only tested their model on the eight most common topics in their dataset and did not consider articles from other topics. To be useful outside of an academic setting, a topic classification model needs to be able to handle more different types of articles.
+Previously, \citet{Wermter:02} proposed a semi-supervised self-organizing memory (SOM) model for topic classification on 100,000 Reuters news articles. The authors were able to achieve accuracies around 90\% for both full text articles and article headlines, and for the full text articles they were able to bump the accuracy up to about 95\% by using WordNet relationships to assist the model (which limited the model input to only the nouns and verbs found in WordNet). Crucially, however, the authors only tested their model on the eight most common topics in their dataset and did not consider articles from other topics. To be useful outside of an academic setting, a topic classification model needs to be able to handle more different types of articles.
 
 Other recent papers have looked at supervised topic classification for non-news documents in various settings. \citet{Karan:16} discusses classification of Croatian political texts using logistic regression (one-vs-rest), Gaussian Naive Bayes, and gradient-boosted trees, as well as utilizing some post-processing rules, to reach an F1 score of 77\% on 22 topics. Their model included lemmas and bigrams as inputs. Meanwhile \citet{Glavas:17} looks at similar political texts in multiple languages, and finds that CNNs perform best for monolingual English models with an accuracy of 57\%. In this paper, I will extend some of the techniques used in these cited works to the news article setting.
 
@@ -58,7 +58,7 @@ Other recent papers have looked at supervised topic classification for non-news 
 \subsection{Dataset}
 \label{ssec:dataset}
 
-For this analysis I used the New York Times Annotated Corpus, which contains 1.8 million articles from 1987-2007, labeled with topics, subtopics, and newspaper sections. Due to computing power limitations, I have selected a random sample of 100,000 articles to parse and use as data for the model. The articles are randomly split so that approximately 75\% are training data, 5\% are development data, and 20\% test data.
+For this analysis I used the New York Times Annotated Corpus, which contains 1.8 million articles from 1987-2007, labeled with topics, subtopics, and newspaper sections. Due to computing power limitations, I have selected a random sample of 100,000 articles to parse and use as data for my models. The articles are randomly split so that approximately 75\% are training data, 5\% are development data, and 20\% test data.
 
 \subsection{Model Input}
 \label{ssec:input}
@@ -90,7 +90,7 @@ Table~\ref{tbl:inputs} shows some key statistics for each type of model input. T
 		Lead Paragraph	& 7.6M	& 15\%	& 105 \\
 		Headlines			& 0.6M	& 1\%	& 8 \\
 		Nouns			& 13.2M	& 27\%	& 178 \\
-		Lemmas			& 50.4M	& 102\%	& 682 \\
+		Lemmas			& 50.5M	& 102\%	& 682 \\
 		\bottomrule
 	\end{tabular}
 	\begin{tabular}{lrrr}
@@ -114,7 +114,7 @@ Table~\ref{tbl:inputs} shows some key statistics for each type of model input. T
 \subsection{Model Output}
 \label{ssec:output}
 
-The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output} shows four examples from the data of the four different ways the articles were classified. In my models I use the \texttt{desk} column as my model output variable for two reasons:
+The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output} shows some examples from the data of the four different ways each article was classified. In my models I use the \texttt{desk} column as my model output variable for two reasons:
 
 \begin{enumerate}
 \item It has the lowest percentage of null values (0.4\%)
@@ -153,7 +153,7 @@ The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output}
 \label{tbl:output}
 \end{sidewaystable*}
 
-However, \texttt{desk} still requires some clean-up before use due to misspellings and possible changes to the desk names over time. Table~\ref{tbl:label-clean} shows some examples of how I cleaned the \texttt{desk} variable so the model would have a standardized set of output labels for the articles. For example, there are significant clusters of articles around "Business/Financial Desk", "Financial Desk", and "Money and Business/Financial Desk" (plus misspellings of each of these), and these are all converted to have a single label of "business \& financial".
+However, \texttt{desk} still requires some clean-up before use due to misspellings and possible changes to the desk names over time. Table~\ref{tbl:label-clean} shows some examples of how I cleaned the \texttt{desk} variable so the model would have a standardized set of output labels for the articles. For example, there are significant clusters of articles around ``Business/Financial Desk", ``Financial Desk", and ``Money and Business/Financial Desk" (plus misspellings of each of these), and these are all converted to have a single label of ``business \& financial".
 
 \begin{table}
 \centering
@@ -194,11 +194,11 @@ However, \texttt{desk} still requires some clean-up before use due to misspellin
 \label{tbl:label-clean}
 \end{table}
 
-After label cleaning, roughly 95\% of articles fall into the top 20 categories, and then there are a large number of very small categories with just a few articles. I therefore created an \texttt{<OTHER>} category as a catchall for these tiny categories, which individually don't have enough data for the models to learn very well. Figure~\ref{fig:topnhist} shows the frequency distribution of the top 20 category labels, plus \texttt{<OTHER>}. The top 8-10 categories are "usual suspects" for newspaper sections (e.g. business, sports, classifieds, editorials), and then we see some smaller categories like book reviews and a couple of weekly sections that are unique to the New York Times (New Jersey weekly, the city weekly, Westchester weekly, Long Island weekly).
+After label cleaning, roughly 95\% of articles fall into the top 20 categories, and then there are a large number of very small categories with just a few articles. I therefore created an \texttt{<OTHER>} category as a catchall for these tiny categories, which individually don't have enough data for the models to learn very well. Figure~\ref{fig:topnhist} shows the frequency distribution of the top 20 category labels, plus \texttt{<OTHER>}. The top 8-10 categories are ``usual suspects" for newspaper sections (e.g. business, sports, classifieds, editorials), and then we see some smaller categories like book reviews and a couple of weekly sections that are unique to the New York Times (New Jersey weekly, the city weekly, Westchester weekly, Long Island weekly).
 
 \begin{figure}
 \centering
-\includegraphics[scale=0.55]{top_n_labels_histogram}
+\includegraphics[scale=0.57]{top_n_labels_histogram}
 \caption{Frequency of Top 20 Labels + \small{\tt <OTHER>}}
 \label{fig:topnhist}
 \end{figure}
@@ -209,7 +209,7 @@ After label cleaning, roughly 95\% of articles fall into the top 20 categories, 
 For each model input, I tested two simple baseline models and a neural network:
 
 \begin{enumerate}
-\item Multinomial na\"{i}ve Bayes
+\item Multinomial naive Bayes
 \item Multi-class logistic regression (one vs. rest)
 \item Convolutional neural network
 \end{enumerate}
@@ -219,31 +219,31 @@ For each model input, I tested two simple baseline models and a neural network:
 
 For the multinomial naive Bayes and logistic regression models, I TF-IDF vectorized the model input, dropping any words with a document frequency count of one. This significantly reduced the vocabulary sizes and got rid of a lot of misspellings and one-off words that just added extra noise to the models.
 
-In each of these models I tested multiple parameter values on the dev data, and chose the parameter values that resulted in the highest accuracy. Figures~\ref{fig:mnb-acc} and~\ref{fig:lr-acc} show how the models performed with different parameter values, and reveal some interesting comparisons between the five model inputs that I will discuss further in Section~\ref{sec:results}.
+For each of these models I tested multiple parameter values on the dev data, and chose the parameter values that resulted in the highest accuracy. Figures~\ref{fig:mnb-acc} and~\ref{fig:lr-acc} show how the models performed with different parameter values, and reveal some interesting comparisons between the five model inputs that I will discuss further in Section~\ref{sec:results}.
 
 \subsubsection{CNN}
 \label{sssec:cnn}
 
-When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. 
+When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. I used the following three strategies to reduce the number of parameters and training time:
 
 \begin{enumerate}
-\item Initialized the model with GloVe word embeddings \cite{GloVe}
+\item Initialized the model with 100-dimensional GloVe word embeddings \cite{GloVe}
 \item Limited the vocabulary to the same size as the TF-IDF vocabulary (see Section~\ref{sssec:mnb-lr})
 \item Padded each model input to the 90th percentile of lengths for that model input (capped at 500)
 \end{enumerate}
 
-I chose this padding method because the length distribution for each model input is extremely right-skewed (e.g. the 90th percentile of full texts has 1,225 words, while the longest full text has over 9,000 words). It didn't make sense to pad model inputs out to the length of the longest article, since most articles are nowhere close to that length, and the model would be unnecessarily large. I therefore sacrificed the data at the ends of the longest articles in the hope of having a model I could actually train with the number of articles I am using.
+Table~\ref{tbl:cnn} shows the final vocabulary and padding sizes for each model input. I chose to pad to the 90th percentile of length instead of the maximum length because the length distribution for each model input is extremely right-skewed (e.g. the 90th percentile of full texts has 1,225 words, while the longest full text has over 9,000 words). Most articles are nowhere close to the maximum length, so padding to the maximum length would have made the CNN models unnecessarily large and more difficult to train.
 
 \begin{figure}
 \centering
-\includegraphics[scale=0.55]{mnb_accuracy}
+\includegraphics[scale=0.57]{mnb_accuracy}
 \caption{MNB Accuracy on Dev Data}
 \label{fig:mnb-acc}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[scale=0.55]{lr_accuracy}
+\includegraphics[scale=0.57]{lr_accuracy}
 \caption{LR Accuracy on Dev Data}
 \label{fig:lr-acc}
 \end{figure}
@@ -271,7 +271,36 @@ I chose this padding method because the length distribution for each model input
 \section{Results \& Discussion}
 \label{sec:results}
 
-Note: \cite{Wermter:02} uses only top 8 topics.
+Results for the two baseline models are slightly different from the CNN results, so I will discuss them separately. Refer to Table~\ref{tbl:acc} for the accuracy of each model + model input combination, and Table~\ref{tbl:f1} for the weighted F1 scores.
+
+\subsection{MNB and LR}
+\label{ssec:mnb-lr2}
+
+The multinomial naive Bayes and logistic regression models both produce the same rankings of model input performance:
+
+\begin{enumerate}
+\item Full Text performs best
+\item Lemmas are nearly identical to Full Text
+\item Nouns are quite close behind Lemmas
+\item Lead Paragraph is several percentage points below the cluster formed by the top three inputs
+\item Headlines perform worst, several percentage points below the Lead Paragraph
+\end{enumerate}
+
+This pattern holds for both accuracy and F1 scores, and Figures~\ref{fig:mnb-acc} and~\ref{fig:lr-acc} show that the pattern also holds over multiple parameter values for each model. This model input ranking essentially boils down to ``more words is better".
+
+Figure~\ref{fig:lr-acc} also shows us another way in which having more words matters: for a given model input, L2 regularization consistently performs better than L1 regularization. L1 regularization forces some feature coefficients to zero, reducing the feature space (i.e. removing words), and this negatively impacts model accuracy.
+
+However, there is evidence that having the \textit{right} words could make up for having fewer words. The Nouns have only 27\% of the words that the Full Text has, but they achieve an accuracy within 1-2 points of the Full Text accuracy. Therefore, the Nouns are probably the most efficient input, achieving relatively high accuracy and F1 scores with just a fraction of the words in Full Text and Lemmas.
+
+\subsection{CNN}
+\label{ssec:cnn2}
+
+Since the CNN for each model input has a few million parameters and is time-consuming to train, it was not possible to optimize the hyperparameters to specifically fit each model input, as I did for the two baseline models. Instead I found a set of hyperparameters that did a reasonable job for all model inputs, and I report those results in Tables~\ref{tbl:acc} and~\ref{tbl:f1}. Therefore, these results may not show a definitive ranking of model inputs, but we can still see interesting patterns.
+
+\begin{enumerate}
+\item Full Text, Nouns, and Lemmas form a cluster at the top. In this case, Lemmas perform best of the three, so potentially the CNN values the high word count combined with a lower vocabulary size.
+\item Lead Paragraph lags significantly behind the top three inputs, and Headlines perform the worst by a wide margin.
+\end{enumerate}
 
 \begin{table}
 \centering
@@ -283,14 +312,14 @@ Note: \cite{Wermter:02} uses only top 8 topics.
 	\cmidrule{2-4}
 	\textbf{Model Input} & \textbf{MNB} & \textbf{LR} & \textbf{CNN} & \multicolumn{1}{c}{\textbf{Best Model}} \\
 	\midrule
-	Full Text			& \textbf{0.}	& \textbf{0.}	& 0.		& \cellcolor[gray]{0.92} X \\
-	Lead Paragraph	& 0.		& 0.		& \textbf{0.}	& \cellcolor[gray]{0.92} X \\
-	Headlines			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
-	Nouns			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
-	Lemmas			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
+	Full Text			& \textbf{0.733}	& \textbf{0.815}	& 0.687		& \cellcolor[gray]{0.92} LR \\
+	Lead Paragraph	& 0.687		& 0.730		& 0.640		& \cellcolor[gray]{0.92} LR \\
+	Headlines			& 0.627		& 0.643		& 0.579		& \cellcolor[gray]{0.92} LR \\
+	Nouns			& 0.721		& 0.792		& 0.690		& \cellcolor[gray]{0.92} LR \\
+	Lemmas			& 0.729		& 0.811		& \textbf{0.701}	& \cellcolor[gray]{0.92} LR \\
 	\midrule
-	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{X} \\
-	& \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{in X} \\
+	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Lemmas & \cellcolor[gray]{0.75} \textbf{Full Text} \\
+	& \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} & \cellcolor[gray]{0.75} \textbf{in LR} \\
 	\bottomrule
 \end{tabular}
 }
@@ -308,14 +337,14 @@ Note: \cite{Wermter:02} uses only top 8 topics.
 	\cmidrule{2-4}
 	\textbf{Model Input} & \textbf{MNB} & \textbf{LR} & \textbf{CNN} & \multicolumn{1}{c}{\textbf{Best Model}} \\
 	\midrule
-	Full Text			& \textbf{0.}	& \textbf{0.}	& 0.		& \cellcolor[gray]{0.92} X \\
-	Lead Paragraph	& 0.		& 0.		& \textbf{0.}	& \cellcolor[gray]{0.92} X \\
-	Headlines			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
-	Nouns			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
-	Lemmas			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
+	Full Text			& \textbf{0.719}	& \textbf{0.806}	& 0.669		& \cellcolor[gray]{0.92} LR \\
+	Lead Paragraph	& 0.667		& 0.716		& 0.623		& \cellcolor[gray]{0.92} LR \\
+	Headlines			& 0.601		& 0.631		& 0.567		& \cellcolor[gray]{0.92} LR \\
+	Nouns			& 0.706		& 0.783		& 0.680		& \cellcolor[gray]{0.92} LR \\
+	Lemmas			& 0.715		& 0.802		& \textbf{0.688}	& \cellcolor[gray]{0.92} LR \\
 	\midrule
-	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{X} \\
-	& \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{in X} \\
+	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Lemmas & \cellcolor[gray]{0.75} \textbf{Full Text} \\
+	& \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} & \cellcolor[gray]{0.75} \textbf{in LR} \\
 	\bottomrule
 \end{tabular}
 }
@@ -326,9 +355,9 @@ Note: \cite{Wermter:02} uses only top 8 topics.
 \section{Conclusion}
 \label{sec:conc}
 
-No time for: SVM, gradient boosted trees
+As shown above, Full Text is the highest-performing model input, with an accuracy of 81.5\% and F1 score of 80.6\% in the Logistic Regression model. However, it is possible to get close to the same level of accuracy with just a fraction of the words by using the Nouns in a Logistic Regression. Users of news topic classification models can therefore choose whether efficiency or the highest possible accuracy is more important to them.
 
-An interesting future project would be to run an unsupervised topic classification algorithm on this corpus (e.g. \citeauthor{Martin:15}~\shortcite{Martin:15} use the Latent Dirichlet Allocation algorithm) and compare those results to the supervised learning results.
+With more time, I would have liked to add some additional models that have been used successfully in other topic classification problems (SVMs, gradient boosted trees). Additionally, an interesting future project would be to run an unsupervised topic classification algorithm on this corpus (such as the Latent Dirichlet Allocation algorithm used by \citet{Martin:15}) and compare those results with the supervised learning results.
 
 \bibliography{final-report} % references .bib file
 \bibliographystyle{acl_natbib} % references acl_natbib.bst
