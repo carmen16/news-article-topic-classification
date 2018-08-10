@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 
 class MultNB:
 
-	def __init__(self, alpha=list(2. ** np.arange(-11, 3, 0.5))):
+	def __init__(self, alpha=list(2. ** np.arange(-11, 4))):
 		self.alpha = alpha
 
 	def test_models(self, sv_obj):
@@ -23,7 +23,7 @@ class MultNB:
 			elapsed = time.time() - start
 			hours, rem = divmod(elapsed, 3600)
 			minutes, seconds = divmod(rem, 60)
-			print('\t{}: tested alpha=2^{:.1f} {:0>2}:{:0>2}:{:0>2}'.format(sv_obj.name_, np.log2(self.alpha[i]), int(hours), int(minutes), int(seconds)))
+			print('\t{}: tested alpha=2^{:.0f} {:0>2}:{:0>2}:{:0>2}'.format(sv_obj.name_, np.log2(self.alpha[i]), int(hours), int(minutes), int(seconds)))
 		
 		# Combine to dataframe
 		pd.options.display.float_format = '{:,.8f}'.format

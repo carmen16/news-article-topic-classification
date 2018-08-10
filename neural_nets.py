@@ -88,7 +88,7 @@ class DataPreparation:
 
 class CNN:
 
-	def cnn(self, sv_obj, num_layers=3, filters=[4, 16, 32], kernel_size=[20, 5, 2], epochs=5):
+	def cnn(self, sv_obj, num_layers=3, filters=[4, 16, 32], kernel_size=[20, 5, 2], epochs=4):
 		train_data = sv_obj.train_ids
 		train_labels = pd.factorize(sv_obj.train_labels)[0]
 		test_data = sv_obj.test_ids
@@ -105,23 +105,31 @@ class CNN:
 		model.add(embedding_layer)
 
 		# Add convolution layers
-		for i in range(num_layers):
+		for i in range(num_layers-1):
 			model.add(tf.keras.layers.Conv1D(filters=filters[i],
 				kernel_size=kernel_size[i],
 				activation=tf.nn.relu))
-			#print('Conv1D input:', model.input_shape)
-			#print('Conv1D output:', model.output_shape)
+			print('Conv1D:', model.output_shape)
 
-		# Add pooling layer
-		pooling_layer = tf.keras.layers.GlobalAveragePooling1D()
-		model.add(pooling_layer)
-		#print('Pooling:', model.output_shape)
+		# Add pooling layers
+		max_pooling_layer = tf.keras.layers.MaxPooling1D()
+		model.add(max_pooling_layer)
+		print('MaxPooling:', model.output_shape)
+
+		model.add(tf.keras.layers.Conv1D(filters=filters[num_layers-1],
+			kernel_size=kernel_size[num_layers-1],
+			activation=tf.nn.relu))
+		print('Conv1D:', model.output_shape)
+
+		avg_pooling_layer = tf.keras.layers.GlobalAveragePooling1D()
+		model.add(avg_pooling_layer)
+		print('AvgPooling:', model.output_shape)
 
 		# Add fully connected layers
 		model.add(tf.keras.layers.Dense(sv_obj.nn_embed_dim_, activation=tf.nn.relu))
-		#print('ReLU:', model.output_shape)
+		print('ReLU:', model.output_shape)
 		model.add(tf.keras.layers.Dense(n_classes, activation=tf.nn.softmax))
-		#print('Softmax:', model.output_shape)
+		print('Softmax:', model.output_shape)
 
 		# Compile and fit model
 		print('\n'+sv_obj.name_.upper()+':\n')
@@ -130,11 +138,11 @@ class CNN:
 			metrics=['accuracy'])
 
 		model.fit(train_data, train_labels, epochs=epochs)
-		sv_obj.nn_model_ = model
+		sv_obj.cnn_model_ = model
 
 		test_loss, test_acc = model.evaluate(test_data, test_labels)
 		print('Test accuracy:', test_acc)
-		sv_obj.nn_accuracy_ = test_acc
+		sv_obj.cnn_accuracy_ = test_acc
 
 		#pred = model.predict(test_data)
 

@@ -73,6 +73,8 @@ I test the article's full text and four additional model inputs. Three are pulle
 \item \textbf{Lemmatized} version of the full text \cite{Martin:15}. Created using NLTK's lemmatizer.
 \end{enumerate}
 
+Table~\ref{tbl:inputs} shows some key statistics for each type of model input. The full text for the training articles (approximately 75,000 articles) adds up to about 50 million words and a vocabulary of over 300,000 words. The lemmas have roughly the same number of words, but much fewer unique words, with a vocabulary size only 72\% of the full text vocabulary. Then there is a big drop down to the nouns, which have only 27\% of the total words that full text articles have, but 61\% of the vocabulary. As expected, headlines are the smallest category with less than a million words total, and the average individual headline having 8 words.
+
 \begin{table}
 	\centering
 	\small
@@ -109,9 +111,6 @@ I test the article's full text and four additional model inputs. Three are pulle
 	\label{tbl:inputs}
 \end{table}
 
-
-Table~\ref{tbl:inputs} shows some key statistics for each type of model input. The full text for the training articles (approximately 75,000 articles) adds up to about 50 million words and a vocabulary of over 300,000 words. The lemmas have roughly the same number of words, but much fewer unique words, with a vocabulary size only 72\% of the full text vocabulary. Then there is a big drop down to the nouns, which have only 27\% of the total words that full text articles have, but 61\% of the vocabulary. As expected, headlines are the smallest category with less than a million words total, and the average individual headline having 8 words.
-
 \subsection{Model Output}
 \label{ssec:output}
 
@@ -122,9 +121,9 @@ The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output}
 \item It never assigns multiple descriptions to the same article
 \end{enumerate}
 
-\begin{sidewaystable}
+\begin{sidewaystable*}
 \centering
-\footnotesize
+%\small
 %\makebox[\linewidth]{
 %\resizebox{\columnwidth}{!}{
 %\rotatebox{270}{
@@ -132,19 +131,19 @@ The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output}
 	\toprule
 	\textbf{\#} & \textbf{Desk} & \textbf{General Descriptor} & \textbf{Online Sections} & \textbf{Taxonomic Classifier} \\
 	\midrule
-	1 & Foreign & \tabitem Immigration \& Refugees & \tabitem World & \tabitem Top/News/World/Europe \\
-	& Desk & \tabitem Jews & & \tabitem Top/News/World/Countries and Territories/Austria \\
+	1 & Foreign Desk & \tabitem Immigration and Refugees & \tabitem World & \tabitem Top/News/World/Europe \\
+	& & \tabitem Jews & & \tabitem Top/News/World/Countries and Territories/Austria \\
 	& & \tabitem Music & & \tabitem Top/Features/Arts/Music \\
-	& & \tabitem Religion \& Churches & & \tabitem Etc. (8 others) \\
+	& & \tabitem Religion and Churches & & \tabitem Etc. (8 others) \\
 	\midrule
-	2 & Book & \tabitem Books \& Literature & \tabitem Arts & \tabitem Top/Features/Arts \\
-	& Review & & \tabitem Books & \tabitem Top/Features/Books \\
-	& Desk & & & \tabitem Top/Features/Books/Book Reviews \\
+	2 & Book Review Desk & \tabitem Books \& Literature & \tabitem Arts & \tabitem Top/Features/Arts \\
+	& & & \tabitem Books & \tabitem Top/Features/Books \\
+	& & & & \tabitem Top/Features/Books/Book Reviews \\
 	\midrule
 	3 & Classified & & \tabitem Paid Death Notices & \tabitem Top/Classifieds/Paid Death Notices \\
 	\midrule
-	4 & Style & \tabitem Computers \& the Internet & \tabitem Technology & \tabitem Top/News/Technology \\
-	& Desk & \tabitem Labor & \tabitem Style & \tabitem Top/Features/Style/Fashion and Style \\
+	4 & Style Desk & \tabitem Computers and the Internet & \tabitem Technology & \tabitem Top/News/Technology \\
+	& & \tabitem Labor & \tabitem Style & \tabitem Top/Features/Style/Fashion and Style \\
 	& & & \tabitem Opinion & \tabitem Top/Opinion/Opinion \\
 	& & & & \tabitem Etc. (2 others) \\
 	\bottomrule
@@ -152,7 +151,7 @@ The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output}
 %}
 \caption{Possible Model Outputs}
 \label{tbl:output}
-\end{sidewaystable}
+\end{sidewaystable*}
 
 However, \texttt{desk} still requires some clean-up before use due to misspellings and possible changes to the desk names over time. Table~\ref{tbl:label-clean} shows some examples of how I cleaned the \texttt{desk} variable so the model would have a standardized set of output labels for the articles. For example, there are significant clusters of articles around "Business/Financial Desk", "Financial Desk", and "Money and Business/Financial Desk" (plus misspellings of each of these), and these are all converted to have a single label of "business \& financial".
 
@@ -207,8 +206,6 @@ After label cleaning, roughly 95\% of articles fall into the top 20 categories, 
 \subsection{Models}
 \label{sec:models}
 
-% For each set of training data, I TF-IDF vectorize it before feeding it into models.
-
 For each model input, I tested two simple baseline models and a neural network:
 
 \begin{enumerate}
@@ -224,6 +221,19 @@ For the multinomial naive Bayes and logistic regression models, I TF-IDF vectori
 
 In each of these models I tested multiple parameter values on the dev data, and chose the parameter values that resulted in the highest accuracy. Figures~\ref{fig:mnb-acc} and~\ref{fig:lr-acc} show how the models performed with different parameter values, and reveal some interesting comparisons between the five model inputs that I will discuss further in Section~\ref{sec:results}.
 
+\subsubsection{CNN}
+\label{sssec:cnn}
+
+When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. 
+
+\begin{enumerate}
+\item Initialized the model with GloVe word embeddings \cite{GloVe}
+\item Limited the vocabulary to the same size as the TF-IDF vocabulary (see Section~\ref{sssec:mnb-lr})
+\item Padded each model input to the 90th percentile of lengths for that model input (capped at 500)
+\end{enumerate}
+
+I chose this padding method because the length distribution for each model input is extremely right-skewed (e.g. the 90th percentile of full texts has 1,225 words, while the longest full text has over 9,000 words). It didn't make sense to pad model inputs out to the length of the longest article, since most articles are nowhere close to that length, and the model would be unnecessarily large. I therefore sacrificed the data at the ends of the longest articles in the hope of having a model I could actually train with the number of articles I am using.
+
 \begin{figure}
 \centering
 \includegraphics[scale=0.55]{mnb_accuracy}
@@ -238,32 +248,19 @@ In each of these models I tested multiple parameter values on the dev data, and 
 \label{fig:lr-acc}
 \end{figure}
 
-\subsubsection{CNN}
-\label{sssec:cnn}
-
-When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. 
-
-\begin{enumerate}
-\item Initialized the model with GloVe word embeddings \cite{GloVe}
-\item Limited the vocabulary to the same size as the TF-IDF vocabulary (see Section~\ref{sssec:mnb-lr})
-\item Padded each model input to the 90th percentile of lengths for that model input
-\end{enumerate}
-
-I chose this padding method because the length distribution for each model input is extremely right-skewed (e.g. the 90th percentile of full texts has 1,225 words, while the longest full text has over 9,000 words). It didn't make sense to pad model inputs out to the length of the longest article, since most articles are nowhere close to that length, and the model would be unnecessarily large. I therefore sacrificed the data at the ends of the longest articles in the hope of having a model I could actually train with the number of articles I am using.
-
 \begin{table}
 \centering
 %\small
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{lrrr}
 	\toprule
-	\textbf{Model Input} & \textbf{Vocab Size} & \textbf{Padding Size} \\
+	\textbf{Model Input} & \textbf{Vocabulary} & \textbf{90\% Length} & \textbf{Padding} \\
 	\midrule
-	Full Text			& 207,070	& 500 \\
-	Lead Paragraph	& 99,210	& 139 \\
-	Headlines			& 30,658	& 11 \\
-	Nouns			& 165,531	& 378 \\
-	Lemmas			& 193,694	& 500 \\
+	Full Text			& 129,165	& 1,225	& 500 \\
+	Lead Paragraph	& 63,733	& 135	& 135 \\
+	Headlines			& 19,724	& 10		&10 \\
+	Nouns			& 97,557	& 374	& 374 \\
+	Lemmas			& 113,923	& 1,239	& 500 \\
 	\bottomrule
 \end{tabular}
 }
@@ -286,19 +283,44 @@ Note: \cite{Wermter:02} uses only top 8 topics.
 	\cmidrule{2-4}
 	\textbf{Model Input} & \textbf{MNB} & \textbf{LR} & \textbf{CNN} & \multicolumn{1}{c}{\textbf{Best Model}} \\
 	\midrule
-	Full Text			& \textbf{0.729}	& \textbf{0.815}	& 0.190		& \cellcolor[gray]{0.92} LR \\
-	Lead Paragraph	& 0.682		& 0.731		& \textbf{0.248}	& \cellcolor[gray]{0.92} LR \\
-	Headlines			& 0.622		& 0.647		& 0.173		& \cellcolor[gray]{0.92} LR \\
-	Nouns			& 0.713		& 0.786		& 0.185		& \cellcolor[gray]{0.92} LR \\
-	Lemmas			& 0.727		& 0.811		& 0.189		& \cellcolor[gray]{0.92} LR \\
+	Full Text			& \textbf{0.}	& \textbf{0.}	& 0.		& \cellcolor[gray]{0.92} X \\
+	Lead Paragraph	& 0.		& 0.		& \textbf{0.}	& \cellcolor[gray]{0.92} X \\
+	Headlines			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
+	Nouns			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
+	Lemmas			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
 	\midrule
-	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Full & \cellcolor[gray]{0.92} Lead & \cellcolor[gray]{0.75} \textbf{Full Text} \\
-	& \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} Text & \cellcolor[gray]{0.92} Para & \cellcolor[gray]{0.75} \textbf{in LR} \\
+	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{X} \\
+	& \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{in X} \\
 	\bottomrule
 \end{tabular}
 }
-\caption{Model Accuracies on Test Data}
+\caption{Accuracies on Test Data}
 \label{tbl:acc}
+\end{table}
+
+\begin{table}
+\centering
+%\small
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lrrrc}
+	\toprule
+	& \multicolumn{3}{c}{\textbf{Model Type}} & \\
+	\cmidrule{2-4}
+	\textbf{Model Input} & \textbf{MNB} & \textbf{LR} & \textbf{CNN} & \multicolumn{1}{c}{\textbf{Best Model}} \\
+	\midrule
+	Full Text			& \textbf{0.}	& \textbf{0.}	& 0.		& \cellcolor[gray]{0.92} X \\
+	Lead Paragraph	& 0.		& 0.		& \textbf{0.}	& \cellcolor[gray]{0.92} X \\
+	Headlines			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
+	Nouns			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
+	Lemmas			& 0.		& 0.		& 0.		& \cellcolor[gray]{0.92} X \\
+	\midrule
+	\multirow{2}{*}{\textbf{Best Input}} & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{X} \\
+	& \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.92} X & \cellcolor[gray]{0.75} \textbf{in X} \\
+	\bottomrule
+\end{tabular}
+}
+\caption{Weighted F1 Scores on Test Data}
+\label{tbl:f1}
 \end{table}
 
 \section{Conclusion}
