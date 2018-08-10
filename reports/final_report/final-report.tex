@@ -41,12 +41,12 @@ Topic classification is an important method of organizing text content and makin
 
 Topic classification is an important form of content analysis that has been widely studied in the NLP community. Tagging documents by topic makes searches more efficient, so users can find the information they're looking for more quickly and without having to sort through unrelated documents. Unfortunately, manual topic-coding on a large scale can be quite time-consuming and expensive, so automating this process can save both time and money for organizations with a large amount of text data.
 
-In this paper, I will look at topic classification specifically in the newspaper context. In addition to making searches more efficient for news consumers and researchers, classifying news articles by topic also helps us understand what journalists are writing about, whether that is changing over time, and the relative importance of different topics. Since many news organizations have seen declining revenue over the last decade \cite{Pew}, a cost-saving measure like automation of topic-coding would likely be welcome. However, in the existing literature there is no agreement on what specifically should be fed into topic classification models to get the best results. In this paper, I develop three supervised topic classification models and test five possible model inputs drawn from New York Times (NYT) articles. For each model, my main focus is how the model inputs perform relative to each other, and which input gives the best result in each setting.
+In this paper, I will look at topic classification specifically in the newspaper context. In addition to making searches more efficient for news consumers and researchers, classifying news articles by topic also helps us understand what journalists are writing about, whether that is changing over time, and the relative importance of different topics. Since many news organizations have experienced declining revenue over the last decade \cite{Pew}, a cost-saving measure like automation of topic-coding would likely be welcome. However, in the existing literature there is no agreement on what specifically should be fed into topic classification models to get the best results. In this paper, I develop three supervised topic classification models and test five possible model inputs drawn from New York Times (NYT) articles. For each model, my main focus is how the model inputs perform relative to each other, and which input gives the best result in each setting.
 
 \section{Background}
 \label{sec:back}
 
-As mentioned, there is a large literature looking at topic classification in many contexts, but only a few papers have focused on classifying newspaper articles. Most recently, \citet{Martin:15} found that using a nouns-only or lemmatized version of the articles improved topic classification on a dataset of 90,000 articles from the San Jose Mercury News. However, these authors were creating an unsupervised model, so they were also relying on the model to generate the topics from the words it received, which is a different task from what I will consider in this paper. \citeauthor{Martin:15} evaluated their model using techniques that are not applicable in a supervised setting, so their results are not directly comparable to mine.
+As mentioned, there is a large literature looking at topic classification in many contexts, but only a few papers have focused on classifying newspaper articles. Most recently, \citet{Martin:15} found that using a nouns-only or lemmatized version of the articles improved topic classification on a dataset of 90,000 articles from the San Jose Mercury News. However, these authors were creating an unsupervised model, so they were also relying on the model to generate the topics from the words it received, which is a different task from what I will consider in this paper. \citeauthor{Martin:15} also evaluated their model using techniques that are not applicable in a supervised setting, so their results are not directly comparable to mine.
 
 Previously, \citet{Wermter:02} proposed a semi-supervised self-organizing memory (SOM) model for topic classification on 100,000 Reuters news articles. The authors were able to achieve accuracies around 90\% for both full text articles and article headlines, and for the full text articles they were able to bump the accuracy up to about 95\% by using WordNet relationships to assist the model (which limited the model input to only the nouns and verbs found in WordNet). Crucially, however, the authors only tested their model on the eight most common topics in their dataset and did not consider articles from other topics. To be useful outside of an academic setting, a topic classification model needs to be able to handle more different types of articles.
 
@@ -153,7 +153,7 @@ The NYT corpus has multiple ways of classifying articles. Table~\ref{tbl:output}
 \label{tbl:output}
 \end{sidewaystable*}
 
-However, \texttt{desk} still requires some clean-up before use due to misspellings and possible changes to the desk names over time. Table~\ref{tbl:label-clean} shows some examples of how I cleaned the \texttt{desk} variable so the model would have a standardized set of output labels for the articles. For example, there are significant clusters of articles around ``Business/Financial Desk", ``Financial Desk", and ``Money and Business/Financial Desk" (plus misspellings of each of these), and these are all converted to have a single label of ``business \& financial".
+However, \texttt{desk} still requires some clean-up before use due to misspellings and possible changes to the desk names over time. Table~\ref{tbl:label-clean} shows some examples of how I cleaned the \texttt{desk} variable so the models would have a standardized set of output labels for the articles. For example, there are significant clusters of articles around ``Business/Financial Desk", ``Financial Desk", and ``Money and Business/Financial Desk" (plus misspellings of each of these), and these are all converted to have a single label of ``business \& financial".
 
 \begin{table}
 \centering
@@ -224,7 +224,7 @@ For each of these models I tested multiple parameter values on the dev data, and
 \subsubsection{CNN}
 \label{sssec:cnn}
 
-When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. I used the following three strategies to reduce the number of parameters and training time:
+When applying a convolutional neural network to this data, I found the main challenge was managing the size of the model, given how large the vocabularies are and how long some articles can be. I used the following three strategies to reduce the number of parameters and model training time:
 
 \begin{enumerate}
 \item Initialized the model with 100-dimensional GloVe word embeddings \cite{GloVe}
@@ -295,10 +295,10 @@ However, there is evidence that having the \textit{right} words could make up fo
 \subsection{CNN}
 \label{ssec:cnn2}
 
-Since the CNN for each model input has a few million parameters and is time-consuming to train, it was not possible to optimize the hyperparameters to specifically fit each model input, as I did for the two baseline models. Instead I found a set of hyperparameters that did a reasonable job for all model inputs, and I report those results in Tables~\ref{tbl:acc} and~\ref{tbl:f1}. Therefore, these results may not show a definitive ranking of model inputs, but we can still see interesting patterns.
+Since the CNN for each model input has a few million parameters and is time-consuming to train, it was not possible to optimize the hyperparameters to specifically fit each model input, as I did for the two baseline models. Instead I found a set of hyperparameters that did a reasonable job for all model inputs, and I report those results in Tables~\ref{tbl:acc} and~\ref{tbl:f1}. Therefore, these results may not show a definitive ranking of model inputs, but we can still see interesting patterns that are similar to what we saw in Section~\ref{ssec:mnb-lr2}.
 
 \begin{enumerate}
-\item Full Text, Nouns, and Lemmas form a cluster at the top. In this case, Lemmas perform best of the three, so potentially the CNN values the high word count combined with a lower vocabulary size.
+\item Full Text, Nouns, and Lemmas have very similar, relatively high performance. In this case, Lemmas perform best of the three, so potentially the CNN values the high word count combined with a lower vocabulary size.
 \item Lead Paragraph lags significantly behind the top three inputs, and Headlines perform the worst by a wide margin.
 \end{enumerate}
 
