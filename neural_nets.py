@@ -88,11 +88,11 @@ class DataPreparation:
 
 class CNN:
 
-	def cnn(self, sv_obj, num_layers=3, filters=[4, 16, 32], kernel_size=[20, 5, 2], epochs=4):
+	def cnn(self, sv_obj, num_layers=3, filters=[4, 16, 32], kernel_size=[20, 10, 5], epochs=5):
 		train_data = sv_obj.train_ids
-		train_labels = pd.factorize(sv_obj.train_labels)[0]
+		train_labels = sv_obj.train_labels.apply(lambda x: sv_obj.label_ids[x]) #pd.factorize(sv_obj.train_labels)[0]
 		test_data = sv_obj.test_ids
-		test_labels = pd.factorize(sv_obj.test_labels)[0]
+		test_labels = sv_obj.test_labels.apply(lambda x: sv_obj.label_ids[x]) #pd.factorize(sv_obj.test_labels)[0]
 		n_classes = sv_obj.n_classes_
 
 		model = tf.keras.Sequential()
@@ -109,27 +109,27 @@ class CNN:
 			model.add(tf.keras.layers.Conv1D(filters=filters[i],
 				kernel_size=kernel_size[i],
 				activation=tf.nn.relu))
-			print('Conv1D:', model.output_shape)
+			#print('Conv1D:', model.output_shape)
 
 		# Add pooling layers
 		max_pooling_layer = tf.keras.layers.MaxPooling1D()
 		model.add(max_pooling_layer)
-		print('MaxPooling:', model.output_shape)
+		#print('MaxPooling:', model.output_shape)
 
 		model.add(tf.keras.layers.Conv1D(filters=filters[num_layers-1],
 			kernel_size=kernel_size[num_layers-1],
 			activation=tf.nn.relu))
-		print('Conv1D:', model.output_shape)
+		#print('Conv1D:', model.output_shape)
 
 		avg_pooling_layer = tf.keras.layers.GlobalAveragePooling1D()
 		model.add(avg_pooling_layer)
-		print('AvgPooling:', model.output_shape)
+		#print('AvgPooling:', model.output_shape)
 
 		# Add fully connected layers
 		model.add(tf.keras.layers.Dense(sv_obj.nn_embed_dim_, activation=tf.nn.relu))
-		print('ReLU:', model.output_shape)
+		#print('ReLU:', model.output_shape)
 		model.add(tf.keras.layers.Dense(n_classes, activation=tf.nn.softmax))
-		print('Softmax:', model.output_shape)
+		#print('Softmax:', model.output_shape)
 
 		# Compile and fit model
 		print('\n'+sv_obj.name_.upper()+':\n')

@@ -23,6 +23,14 @@ class SplitVectorize:
 			df[self.articles]], axis=1))
 		label_count = self.df.groupby(self.labels, as_index=False).count().sort_values(by=[self.articles], ascending=False).reset_index()[[self.labels, self.articles]]
 		self.n_classes_ = len(label_count[self.labels])
+        
+		# Make dict of label IDs
+		self.label_ids = {}
+		i = 0
+		for x in self.top_n_labels_:
+			self.label_ids[x] = i
+			i += 1
+		self.label_ids['<OTHER>'] = i
 
 		plt.bar(range(self.n_classes_), label_count[self.articles], color='#1f77b4')
 		#plt.title('Top '+str(n_labels)+' Categories + <OTHER>')
